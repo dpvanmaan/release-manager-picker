@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - roulette-data:/app/data
+    environment:
+      - DATABASE_PATH=/app/data/release-manager.db
+      - NODE_ENV=production
+    restart: unless-stopped
+
+volumes:
+  roulette-data:

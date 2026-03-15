@@ -1,0 +1,20 @@
+@import url("https://fonts.googleapis.com/css2?family=Bangers&display=swap");
+@import "tailwindcss";
+
+@layer base {
+  html {
+    background: #09090b;
+    color: #f4f4f5;
+  }
+
+  body {
+    background: #09090b;
+    color: #f4f4f5;
+    font-family: system-ui, sans-serif;
+  }
+}
+
+.font-bangers {
+  font-family: "Bangers", cursive;
+  letter-spacing: 0.05em;
+}
