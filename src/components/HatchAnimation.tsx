@@ -40,41 +40,33 @@ function StickFigure({
 }) {
   const baseY = FLOOR_Y - 50;
 
-  if (isSeated) {
-    return (
-      <motion.g
-        initial={{ y: -200, opacity: 0 }}
-        animate={{ y: STAGE_H + 40, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeIn" }}
-      >
-        {/* seated figure rendered below stage via transform on parent */}
-      </motion.g>
-    );
-  }
+  if (isSeated || isEliminated) return null;
 
-  if (isEliminated) return null;
+  const hatchCenterX = HATCH_X + HATCH_W / 2;
 
   return (
     <motion.g
-      transform={`translate(${x}, ${baseY})`}
+      initial={{ x, y: baseY, opacity: 1 }}
       animate={
         isFalling
-          ? { y: 200, rotate: 360, opacity: 0 }
+          ? { x: hatchCenterX, y: STAGE_H + 60, rotate: 90, opacity: 0 }
           : isPanicking && isWinner
           ? {
-              x: [0, -4, 4, -3, 3, 0],
+              x: [x - 4, x + 4, x - 3, x + 3, x],
+              y: baseY,
               transition: { repeat: Infinity, duration: 0.25 },
             }
           : isPanicking
           ? {
-              y: [0, -3, 0],
+              x,
+              y: [baseY, baseY - 3, baseY],
               transition: {
                 repeat: Infinity,
                 duration: 0.4,
                 delay: Math.random() * 0.3,
               },
             }
-          : {}
+          : { x, y: baseY }
       }
       transition={isFalling ? { duration: 0.7, ease: "easeIn" } : undefined}
     >
