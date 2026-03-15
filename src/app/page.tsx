@@ -22,7 +22,8 @@ interface SelectionResult {
 }
 
 const ELIMINATION_DELAY = 500;
-const TRAP_DOOR_DELAY = 600;
+const TRAP_DOOR_DELAY = 400;
+const WALK_TO_HATCH = 900;
 const FALL_DELAY = 900;
 const SEATED_DELAY = 500;
 
@@ -79,6 +80,9 @@ export default function HomePage() {
     }
 
     await new Promise((res) => setTimeout(res, TRAP_DOOR_DELAY));
+    setPhase("walking");
+
+    await new Promise((res) => setTimeout(res, WALK_TO_HATCH));
     setPhase("dropping");
 
     await new Promise((res) => setTimeout(res, FALL_DELAY));

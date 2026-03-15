@@ -23,6 +23,7 @@ export interface ManagerWithWeight extends Manager {
 export type AnimationPhase =
   | "idle"
   | "picking"
+  | "walking"
   | "dropping"
   | "seated"
   | "celebrating";

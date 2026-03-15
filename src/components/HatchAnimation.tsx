@@ -24,19 +24,23 @@ const FIGURE_SPACING = 70;
 function StickFigure({
   name,
   x,
+  index,
   isWinner,
   isPanicking,
   isEliminated,
   isFalling,
   isSeated,
+  isWalkingToHatch,
 }: {
   name: string;
   x: number;
+  index: number;
   isWinner: boolean;
   isPanicking: boolean;
   isEliminated: boolean;
   isFalling: boolean;
   isSeated: boolean;
+  isWalkingToHatch: boolean;
 }) {
   const baseY = FLOOR_Y - 50;
 
@@ -49,26 +53,29 @@ function StickFigure({
       initial={{ x, y: baseY, opacity: 1 }}
       animate={
         isFalling
-          ? { x: hatchCenterX, y: STAGE_H + 60, rotate: 90, opacity: 0 }
-          : isPanicking && isWinner
-          ? {
-              x: [x - 4, x + 4, x - 3, x + 3, x],
-              y: baseY,
-              transition: { repeat: Infinity, duration: 0.25 },
-            }
+          ? { x: hatchCenterX, y: [baseY, baseY - 8, STAGE_H + 60], rotate: 90, opacity: 0 }
+          : isWalkingToHatch
+          ? { x: hatchCenterX, y: baseY }
           : isPanicking
           ? {
-              x,
-              y: [baseY, baseY - 3, baseY],
+              x: [x - 20, x + 20],
+              y: baseY,
               transition: {
                 repeat: Infinity,
-                duration: 0.4,
-                delay: Math.random() * 0.3,
+                repeatType: "mirror" as const,
+                duration: isWinner ? 1.2 : 1.6 + index * 0.15,
+                ease: "linear",
               },
             }
           : { x, y: baseY }
       }
-      transition={isFalling ? { duration: 0.7, ease: "easeIn" } : undefined}
+      transition={
+        isFalling
+          ? { duration: 0.7, ease: "easeIn" }
+          : isWalkingToHatch
+          ? { duration: 0.6, ease: "easeInOut" }
+          : undefined
+      }
     >
       {/* Head */}
       <circle cx={0} cy={-30} r={10} stroke="#e2e8f0" strokeWidth={2} fill="none" />
@@ -105,8 +112,7 @@ export default function HatchAnimation({
   const totalWidth = Math.max(count * FIGURE_SPACING, STAGE_W);
   const startX = (totalWidth - (count - 1) * FIGURE_SPACING) / 2;
 
-  const hatchOpen =
-    phase === "dropping" || phase === "seated" || phase === "celebrating";
+  const hatchOpen = true;
 
   return (
     <div className="relative w-full overflow-hidden rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl">
@@ -144,11 +150,13 @@ export default function HatchAnimation({
               key={m.id}
               name={m.name}
               x={x}
+              index={i}
               isWinner={isWinner}
-              isPanicking={phase === "picking"}
+              isPanicking={phase === "picking" || phase === "walking"}
               isEliminated={isEliminated}
               isFalling={isFalling}
               isSeated={isWinner && (phase === "seated" || phase === "celebrating")}
+              isWalkingToHatch={isWinner && phase === "walking"}
             />
           );
         })}
