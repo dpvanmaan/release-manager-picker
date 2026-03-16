@@ -24,59 +24,58 @@ const FIGURE_SPACING = 70;
 function StickFigure({
   name,
   x,
+  index,
   isWinner,
   isPanicking,
   isEliminated,
   isFalling,
   isSeated,
+  isWalkingToHatch,
 }: {
   name: string;
   x: number;
+  index: number;
   isWinner: boolean;
   isPanicking: boolean;
   isEliminated: boolean;
   isFalling: boolean;
   isSeated: boolean;
+  isWalkingToHatch: boolean;
 }) {
   const baseY = FLOOR_Y - 50;
 
-  if (isSeated) {
-    return (
-      <motion.g
-        initial={{ y: -200, opacity: 0 }}
-        animate={{ y: STAGE_H + 40, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeIn" }}
-      >
-        {/* seated figure rendered below stage via transform on parent */}
-      </motion.g>
-    );
-  }
+  if (isSeated || isEliminated) return null;
 
-  if (isEliminated) return null;
+  const hatchCenterX = HATCH_X + HATCH_W / 2;
 
   return (
     <motion.g
-      transform={`translate(${x}, ${baseY})`}
+      initial={{ x, y: baseY, opacity: 1 }}
       animate={
         isFalling
-          ? { y: 200, rotate: 360, opacity: 0 }
-          : isPanicking && isWinner
-          ? {
-              x: [0, -4, 4, -3, 3, 0],
-              transition: { repeat: Infinity, duration: 0.25 },
-            }
+          ? { x: hatchCenterX, y: [baseY, baseY - 8, STAGE_H + 60], rotate: 90, opacity: 0 }
+          : isWalkingToHatch
+          ? { x: hatchCenterX, y: baseY }
           : isPanicking
           ? {
-              y: [0, -3, 0],
+              x: [x - 20, x + 20],
+              y: baseY,
               transition: {
                 repeat: Infinity,
-                duration: 0.4,
-                delay: Math.random() * 0.3,
+                repeatType: "mirror" as const,
+                duration: isWinner ? 1.2 : 1.6 + index * 0.15,
+                ease: "linear",
               },
             }
-          : {}
+          : { x, y: baseY }
       }
-      transition={isFalling ? { duration: 0.7, ease: "easeIn" } : undefined}
+      transition={
+        isFalling
+          ? { duration: 0.7, ease: "easeIn" }
+          : isWalkingToHatch
+          ? { duration: 0.6, ease: "easeInOut" }
+          : undefined
+      }
     >
       {/* Head */}
       <circle cx={0} cy={-30} r={10} stroke="#e2e8f0" strokeWidth={2} fill="none" />
@@ -113,8 +112,7 @@ export default function HatchAnimation({
   const totalWidth = Math.max(count * FIGURE_SPACING, STAGE_W);
   const startX = (totalWidth - (count - 1) * FIGURE_SPACING) / 2;
 
-  const hatchOpen =
-    phase === "dropping" || phase === "seated" || phase === "celebrating";
+  const hatchOpen = phase === "walking" || phase === "dropping" || phase === "seated" || phase === "celebrating";
 
   return (
     <div className="relative w-full overflow-hidden rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl">
@@ -129,16 +127,8 @@ export default function HatchAnimation({
         {/* Stage floor */}
         <rect x={0} y={FLOOR_Y} width={STAGE_W} height={4} fill="#3f3f46" />
 
-        {/* Hatch outline */}
-        <rect
-          x={HATCH_X}
-          y={FLOOR_Y - 2}
-          width={HATCH_W}
-          height={6}
-          fill="#18181b"
-          stroke="#71717a"
-          strokeWidth={1}
-        />
+        {/* Hatch opening (hole in the floor) */}
+        <rect x={HATCH_X} y={FLOOR_Y} width={HATCH_W} height={4} fill="#09090b" />
 
         {/* Figures */}
         {managers.map((m, i) => {
@@ -152,44 +142,42 @@ export default function HatchAnimation({
               key={m.id}
               name={m.name}
               x={x}
+              index={i}
               isWinner={isWinner}
-              isPanicking={phase === "picking"}
+              isPanicking={phase === "picking" || phase === "walking"}
               isEliminated={isEliminated}
               isFalling={isFalling}
               isSeated={isWinner && (phase === "seated" || phase === "celebrating")}
+              isWalkingToHatch={isWinner && phase === "walking"}
             />
           );
         })}
 
-        {/* Hatch doors (3D split) */}
-        <g style={{ perspective: 400 }}>
-          <motion.rect
-            x={HATCH_X}
-            y={FLOOR_Y - 2}
-            width={HATCH_W / 2}
-            height={6}
-            fill="#27272a"
-            stroke="#52525b"
-            strokeWidth={1}
-            animate={hatchOpen ? { scaleX: 0 } : { scaleX: 1 }}
-            style={{ transformOrigin: `${HATCH_X}px ${FLOOR_Y + 1}px` }}
-            transition={{ duration: 0.4 }}
-          />
-          <motion.rect
-            x={HATCH_X + HATCH_W / 2}
-            y={FLOOR_Y - 2}
-            width={HATCH_W / 2}
-            height={6}
-            fill="#27272a"
-            stroke="#52525b"
-            strokeWidth={1}
-            animate={hatchOpen ? { scaleX: 0 } : { scaleX: 1 }}
-            style={{
-              transformOrigin: `${HATCH_X + HATCH_W}px ${FLOOR_Y + 1}px`,
-            }}
-            transition={{ duration: 0.4 }}
-          />
-        </g>
+        {/* Hatch doors — pivot on top edge, swing open downward */}
+        <motion.rect
+          x={HATCH_X}
+          y={FLOOR_Y - 2}
+          width={HATCH_W / 2}
+          height={20}
+          fill="#27272a"
+          stroke="#52525b"
+          strokeWidth={1}
+          animate={hatchOpen ? { scaleY: 0 } : { scaleY: 1 }}
+          style={{ transformOrigin: `${HATCH_X}px ${FLOOR_Y - 2}px` }}
+          transition={{ duration: 0.4 }}
+        />
+        <motion.rect
+          x={HATCH_X + HATCH_W / 2}
+          y={FLOOR_Y - 2}
+          width={HATCH_W / 2}
+          height={20}
+          fill="#27272a"
+          stroke="#52525b"
+          strokeWidth={1}
+          animate={hatchOpen ? { scaleY: 0 } : { scaleY: 1 }}
+          style={{ transformOrigin: `${HATCH_X + HATCH_W / 2}px ${FLOOR_Y - 2}px` }}
+          transition={{ duration: 0.4 }}
+        />
       </svg>
 
       {/* Below-stage: manager chair area */}
