@@ -5,9 +5,11 @@ interface ManagerWithHistory extends Manager {
 }
 
 function parseUtc(dateStr: string): Date {
-  // SQLite stores UTC without 'Z'; append it so the browser/Node parses correctly
-  const normalized =
-    dateStr.includes("T") && !dateStr.endsWith("Z") ? dateStr + "Z" : dateStr;
+  // SQLite stores UTC as "YYYY-MM-DD HH:MM:SS" (space, no T, no Z)
+  // Replace the space with T and append Z so it's parsed as UTC
+  const normalized = dateStr.includes("T")
+    ? dateStr
+    : dateStr.replace(" ", "T") + "Z";
   return new Date(normalized);
 }
 
@@ -17,6 +19,9 @@ export function managerWeight(lastPicked: string | null): number {
     return Math.pow(30 * 24 * 60 * 60, 1.5);
   }
   const seconds = Math.max(0.01, (Date.now() - parseUtc(lastPicked).getTime()) / 1000);
+  console.log(lastPicked)
+  console.log(parseUtc(lastPicked).getTime())
+  console.log(Date.now())
   return Math.pow(seconds, 1.5);
 }
 

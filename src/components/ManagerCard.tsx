@@ -17,8 +17,9 @@ interface Props {
 
 function daysSince(dateStr: string | null): number {
   if (!dateStr) return 999;
-  const normalized =
-    dateStr.includes("T") && !dateStr.endsWith("Z") ? dateStr + "Z" : dateStr;
+  const normalized = dateStr.includes("T")
+    ? dateStr
+    : dateStr.replace(" ", "T") + "Z";
   return (Date.now() - new Date(normalized).getTime()) / (1000 * 60 * 60 * 24);
 }
 
