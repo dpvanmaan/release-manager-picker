@@ -1,13 +1,29 @@
-import { sql } from "@vercel/postgres";
+import postgres from "postgres";
 import type { DbAdapter, ManagerWithStats, ManagerForSelection, HistoryResult } from "./adapter";
 import type { Manager, SelectionHistoryRow } from "@/lib/types";
+
+function getSql() {
+  const url =
+    process.env.SUPABASE_DB_URL ??
+    process.env.POSTGRES_URL ??
+    process.env.DATABASE_URL;
+  if (!url) throw new Error("No Postgres connection URL found. Set SUPABASE_DB_URL.");
+  return postgres(url);
+}
+
+let _sql: ReturnType<typeof postgres> | null = null;
+function sql() {
+  if (!_sql) _sql = getSql();
+  return _sql;
+}
 
 export class PostgresAdapter implements DbAdapter {
   private initialized = false;
 
   private async ensureSchema(): Promise<void> {
     if (this.initialized) return;
-    await sql`
+    const db = sql();
+    await db`
       CREATE TABLE IF NOT EXISTS managers (
         id         SERIAL PRIMARY KEY,
         name       TEXT    NOT NULL,
@@ -16,7 +32,7 @@ export class PostgresAdapter implements DbAdapter {
         created_at TEXT    NOT NULL DEFAULT (NOW()::text)
       )
     `;
-    await sql`
+    await db`
       CREATE TABLE IF NOT EXISTS selection_history (
         id          SERIAL PRIMARY KEY,
         manager_id  INTEGER NOT NULL REFERENCES managers(id),
@@ -24,7 +40,7 @@ export class PostgresAdapter implements DbAdapter {
         notes       TEXT
       )
     `;
-    await sql`
+    await db`
       CREATE INDEX IF NOT EXISTS idx_history_manager_selected
         ON selection_history(manager_id, selected_at DESC)
     `;
@@ -33,7 +49,7 @@ export class PostgresAdapter implements DbAdapter {
 
   async getManagers(): Promise<ManagerWithStats[]> {
     await this.ensureSchema();
-    const { rows } = await sql<ManagerWithStats>`
+    return sql()<ManagerWithStats[]>`
       SELECT m.*,
         (SELECT selected_at FROM selection_history WHERE manager_id = m.id ORDER BY selected_at DESC LIMIT 1) AS last_picked,
         (SELECT COUNT(*) FROM selection_history WHERE manager_id = m.id)::int AS pick_count
@@ -41,24 +57,23 @@ export class PostgresAdapter implements DbAdapter {
       WHERE m.is_active = 1
       ORDER BY m.name ASC
     `;
-    return rows;
   }
 
   async getManagerById(id: string | number): Promise<Manager | null> {
     await this.ensureSchema();
-    const { rows } = await sql<Manager>`SELECT * FROM managers WHERE id = ${Number(id)}`;
+    const rows = await sql()<Manager[]>`SELECT * FROM managers WHERE id = ${Number(id)}`;
     return rows[0] ?? null;
   }
 
   async createManager(name: string, avatarUrl: string | null): Promise<Manager> {
     await this.ensureSchema();
-    const { rows: existing } = await sql`
+    const existing = await sql()`
       SELECT id FROM managers WHERE name = ${name} AND is_active = 1
     `;
     if (existing.length > 0) {
       throw Object.assign(new Error("Name already exists"), { code: "DUPLICATE" });
     }
-    const { rows } = await sql<Manager>`
+    const rows = await sql()<Manager[]>`
       INSERT INTO managers (name, avatar_url) VALUES (${name}, ${avatarUrl})
       RETURNING *
     `;
@@ -67,34 +82,33 @@ export class PostgresAdapter implements DbAdapter {
 
   async updateManager(id: string | number, name: string): Promise<{ changed: boolean }> {
     await this.ensureSchema();
-    const { rowCount } = await sql`
+    const result = await sql()`
       UPDATE managers SET name = ${name} WHERE id = ${Number(id)} AND is_active = 1
     `;
-    return { changed: (rowCount ?? 0) > 0 };
+    return { changed: result.count > 0 };
   }
 
   async deactivateManager(id: string | number): Promise<{ changed: boolean }> {
     await this.ensureSchema();
-    const { rowCount } = await sql`
+    const result = await sql()`
       UPDATE managers SET is_active = 0 WHERE id = ${Number(id)} AND is_active = 1
     `;
-    return { changed: (rowCount ?? 0) > 0 };
+    return { changed: result.count > 0 };
   }
 
   async getManagersForSelection(): Promise<ManagerForSelection[]> {
     await this.ensureSchema();
-    const { rows } = await sql<ManagerForSelection>`
+    return sql()<ManagerForSelection[]>`
       SELECT m.*,
         (SELECT selected_at FROM selection_history WHERE manager_id = m.id ORDER BY selected_at DESC LIMIT 1) AS last_picked
       FROM managers m
       WHERE m.is_active = 1
     `;
-    return rows;
   }
 
   async recordSelection(managerId: number, notes: string): Promise<void> {
     await this.ensureSchema();
-    await sql`
+    await sql()`
       INSERT INTO selection_history (manager_id, notes) VALUES (${managerId}, ${notes})
     `;
   }
@@ -104,7 +118,7 @@ export class PostgresAdapter implements DbAdapter {
     const limit = 20;
     const offset = (page - 1) * limit;
 
-    const { rows } = await sql<SelectionHistoryRow>`
+    const rows = await sql()<SelectionHistoryRow[]>`
       SELECT sh.id, sh.manager_id, sh.selected_at, sh.notes,
              m.name AS manager_name
       FROM selection_history sh
@@ -113,10 +127,10 @@ export class PostgresAdapter implements DbAdapter {
       LIMIT ${limit} OFFSET ${offset}
     `;
 
-    const { rows: countRows } = await sql<{ count: string }>`
+    const countResult = await sql()<{ count: string }[]>`
       SELECT COUNT(*) AS count FROM selection_history
     `;
-    const total = parseInt(countRows[0]?.count ?? "0", 10);
+    const total = parseInt(countResult[0]?.count ?? "0", 10);
 
     return { rows, total, page, limit };
   }
