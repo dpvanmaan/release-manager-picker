@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import ManagerCard from "@/components/ManagerCard";
 import ManagerForm from "@/components/ManagerForm";
+import { computeProbabilities } from "@/lib/selection";
 
 interface Manager {
   id: number;
@@ -94,12 +95,13 @@ export default function ManagersPage() {
       ) : (
         <motion.div className="grid gap-3 sm:grid-cols-2" layout>
           <AnimatePresence>
-            {managers.map((m) => (
+            {managers.map((m, i) => (
               <ManagerCard
                 key={m.id}
                 manager={m}
                 onDelete={handleDelete}
                 onEdit={handleEdit}
+                probability={computeProbabilities(managers)[i]}
               />
             ))}
           </AnimatePresence>

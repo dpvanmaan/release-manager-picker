@@ -12,16 +12,23 @@ interface Props {
   manager: Manager;
   onDelete: (id: number) => void;
   onEdit: (manager: Manager) => void;
+  probability?: number;
 }
 
 function daysSince(dateStr: string | null): number {
   if (!dateStr) return 999;
-  return (Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24);
+  const normalized = dateStr.includes("T")
+    ? dateStr
+    : dateStr.replace(" ", "T") + "Z";
+  return (Date.now() - new Date(normalized).getTime()) / (1000 * 60 * 60 * 24);
 }
 
-export default function ManagerCard({ manager, onDelete, onEdit }: Props) {
+export default function ManagerCard({ manager, onDelete, onEdit, probability }: Props) {
   const days = daysSince(manager.last_picked);
-  const barWidth = Math.min(100, (days / 14) * 100);
+  const barWidth =
+    probability !== undefined
+      ? Math.max(0, Math.min(100, probability))
+      : Math.max(0, Math.min(100, (days / 14) * 100));
 
   return (
     <motion.div
