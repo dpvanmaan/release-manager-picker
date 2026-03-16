@@ -34,6 +34,7 @@ export default function HomePage() {
   const [funnyMessage, setFunnyMessage] = useState("");
   const [eliminatedIds, setEliminatedIds] = useState<number[]>([]);
   const [historyKey, setHistoryKey] = useState(0);
+  const [pausedIds, setPausedIds] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     fetch("/api/managers")
@@ -41,8 +42,19 @@ export default function HomePage() {
       .then(setManagers);
   }, []);
 
+  function togglePause(id: number) {
+    setPausedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  const eligibleManagers = managers.filter((m) => !pausedIds.has(m.id));
+
   const handlePick = useCallback(async () => {
-    if (phase !== "idle" || managers.length === 0) return;
+    if (phase !== "idle" || eligibleManagers.length === 0) return;
 
     setPhase("picking");
     setWinner(null);
@@ -51,7 +63,11 @@ export default function HomePage() {
 
     let result: SelectionResult;
     try {
-      const res = await fetch("/api/selection", { method: "POST" });
+      const res = await fetch("/api/selection", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ excludeIds: Array.from(pausedIds) }),
+      });
       if (!res.ok) {
         const err = await res.json();
         alert(err.error ?? "Pick failed");
@@ -93,8 +109,16 @@ export default function HomePage() {
 
     const updated = await fetch("/api/managers").then((r) => r.json());
     setManagers(updated);
+    setPausedIds(new Set());
     setHistoryKey((k) => k + 1);
-  }, [phase, managers]);
+  }, [phase, eligibleManagers, pausedIds]);
+
+  function handleReset() {
+    setPhase("idle");
+    setWinner(null);
+    setEliminatedIds([]);
+    setPausedIds(new Set());
+  }
 
   // Spacebar shortcut
   useEffect(() => {
@@ -102,11 +126,7 @@ export default function HomePage() {
       if (e.code === "Space" && e.target === document.body) {
         e.preventDefault();
         if (phase === "idle") handlePick();
-        if (phase === "celebrating") {
-          setPhase("idle");
-          setWinner(null);
-          setEliminatedIds([]);
-        }
+        if (phase === "celebrating") handleReset();
       }
     };
     window.addEventListener("keydown", handler);
@@ -138,25 +158,47 @@ export default function HomePage() {
         </div>
       ) : (
         <>
+          {/* Skip-this-pick toggles — only shown when idle */}
+          {phase === "idle" && managers.length > 1 && (
+            <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-3">
+              <p className="mb-2 text-xs text-zinc-500">Skip from this pick:</p>
+              <div className="flex flex-wrap gap-2">
+                {managers.map((m) => {
+                  const paused = pausedIds.has(m.id);
+                  return (
+                    <button
+                      key={m.id}
+                      onClick={() => togglePause(m.id)}
+                      className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                        paused
+                          ? "bg-zinc-700 text-zinc-400 line-through"
+                          : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+                      }`}
+                    >
+                      {m.name}
+                    </button>
+                  );
+                })}
+              </div>
+              {pausedIds.size > 0 && eligibleManagers.length === 0 && (
+                <p className="mt-2 text-xs text-red-400">
+                  At least one member must be eligible.
+                </p>
+              )}
+            </div>
+          )}
+
           <HatchAnimation
             phase={phase}
-            managers={managers}
+            managers={eligibleManagers}
             winner={winner}
             eliminatedIds={eliminatedIds}
           />
 
           <div className="flex flex-col items-center gap-2">
             <BigRedButton
-              onClick={
-                phase === "celebrating"
-                  ? () => {
-                      setPhase("idle");
-                      setWinner(null);
-                      setEliminatedIds([]);
-                    }
-                  : handlePick
-              }
-              disabled={isDisabled}
+              onClick={phase === "celebrating" ? handleReset : handlePick}
+              disabled={isDisabled || (phase === "idle" && eligibleManagers.length === 0)}
             />
             {phase === "celebrating" && (
               <p className="text-xs text-zinc-600">Press Space or click to reset</p>
