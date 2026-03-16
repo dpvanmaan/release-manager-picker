@@ -127,6 +127,9 @@ export default function HatchAnimation({
         {/* Stage floor */}
         <rect x={0} y={FLOOR_Y} width={STAGE_W} height={4} fill="#3f3f46" />
 
+        {/* Hatch opening (hole in the floor) */}
+        <rect x={HATCH_X} y={FLOOR_Y} width={HATCH_W} height={4} fill="#09090b" />
+
         {/* Figures */}
         {managers.map((m, i) => {
           const x = startX + i * FIGURE_SPACING;
