@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "postgres": "^3.4.5",
     "better-sqlite3": "^12.8.0",
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.36.0",
