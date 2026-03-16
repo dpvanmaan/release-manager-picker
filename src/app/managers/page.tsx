@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import ManagerCard from "@/components/ManagerCard";
 import ManagerForm from "@/components/ManagerForm";
+import { computeProbabilities } from "@/lib/selection";
 
 interface Manager {
   id: number;
@@ -16,23 +17,6 @@ export default function ManagersPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Manager | null>(null);
-
-  function computeProbabilities(list: Manager[]): number[] {
-    const weights = list.map((m) => {
-      if (!m.last_picked) return Math.pow(30 * 24 * 60 * 60, 1.5);
-      const seconds =
-        (Date.now() -
-          new Date(
-            m.last_picked.includes("T") && !m.last_picked.endsWith("Z")
-              ? m.last_picked + "Z"
-              : m.last_picked,
-          ).getTime()) /
-        1000;
-      return Math.pow(Math.max(0.01, seconds), 1.5);
-    });
-    const total = weights.reduce((a, b) => a + b, 0);
-    return weights.map((w) => (total > 0 ? (w / total) * 100 : 0));
-  }
 
   async function loadManagers() {
     const data = await fetch("/api/managers").then((r) => r.json());
