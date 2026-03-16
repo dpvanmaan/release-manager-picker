@@ -112,7 +112,7 @@ export default function HatchAnimation({
   const totalWidth = Math.max(count * FIGURE_SPACING, STAGE_W);
   const startX = (totalWidth - (count - 1) * FIGURE_SPACING) / 2;
 
-  const hatchOpen = true;
+  const hatchOpen = phase === "walking" || phase === "dropping" || phase === "seated" || phase === "celebrating";
 
   return (
     <div className="relative w-full overflow-hidden rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl">
@@ -161,35 +161,31 @@ export default function HatchAnimation({
           );
         })}
 
-        {/* Hatch doors (3D split) */}
-        <g style={{ perspective: 400 }}>
-          <motion.rect
-            x={HATCH_X}
-            y={FLOOR_Y - 2}
-            width={HATCH_W / 2}
-            height={6}
-            fill="#27272a"
-            stroke="#52525b"
-            strokeWidth={1}
-            animate={hatchOpen ? { scaleX: 0 } : { scaleX: 1 }}
-            style={{ transformOrigin: `${HATCH_X}px ${FLOOR_Y + 1}px` }}
-            transition={{ duration: 0.4 }}
-          />
-          <motion.rect
-            x={HATCH_X + HATCH_W / 2}
-            y={FLOOR_Y - 2}
-            width={HATCH_W / 2}
-            height={6}
-            fill="#27272a"
-            stroke="#52525b"
-            strokeWidth={1}
-            animate={hatchOpen ? { scaleX: 0 } : { scaleX: 1 }}
-            style={{
-              transformOrigin: `${HATCH_X + HATCH_W}px ${FLOOR_Y + 1}px`,
-            }}
-            transition={{ duration: 0.4 }}
-          />
-        </g>
+        {/* Hatch doors — pivot on top edge, swing open downward */}
+        <motion.rect
+          x={HATCH_X}
+          y={FLOOR_Y - 2}
+          width={HATCH_W / 2}
+          height={20}
+          fill="#27272a"
+          stroke="#52525b"
+          strokeWidth={1}
+          animate={hatchOpen ? { scaleY: 0 } : { scaleY: 1 }}
+          style={{ transformOrigin: `${HATCH_X}px ${FLOOR_Y - 2}px` }}
+          transition={{ duration: 0.4 }}
+        />
+        <motion.rect
+          x={HATCH_X + HATCH_W / 2}
+          y={FLOOR_Y - 2}
+          width={HATCH_W / 2}
+          height={20}
+          fill="#27272a"
+          stroke="#52525b"
+          strokeWidth={1}
+          animate={hatchOpen ? { scaleY: 0 } : { scaleY: 1 }}
+          style={{ transformOrigin: `${HATCH_X + HATCH_W / 2}px ${FLOOR_Y - 2}px` }}
+          transition={{ duration: 0.4 }}
+        />
       </svg>
 
       {/* Below-stage: manager chair area */}
