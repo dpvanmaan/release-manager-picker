@@ -307,8 +307,6 @@ function StickFigure({
       <circle cx={0} cy={-30} r={10} stroke={BODY_COLOR} strokeWidth={2} fill={faceColor} />
       {/* Face expression — features contrast against face fill */}
       <FaceExpression face={face} featureColor={featureColor} />
-      {/* Shirt — drawn before body lines so lines appear on top */}
-      <ShirtDecoration shirt={shirt} />
       {/* Body */}
       <line x1={0} y1={-20} x2={0} y2={10} stroke={BODY_COLOR} strokeWidth={2} />
       {/* Arms */}
@@ -317,6 +315,8 @@ function StickFigure({
       <line x1={0} y1={10} x2={-12} y2={35} stroke={BODY_COLOR} strokeWidth={2} />
       {/* Right leg */}
       <line x1={0} y1={10} x2={12} y2={35} stroke={BODY_COLOR} strokeWidth={2} />
+      {/* Shirt — drawn over body lines */}
+      <ShirtDecoration shirt={shirt} />
       {/* Name tag */}
       <text
         x={0}

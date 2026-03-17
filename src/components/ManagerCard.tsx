@@ -135,7 +135,12 @@ function TinyFigure({
           <path d="M -3.5 -27 Q -1.5 -25 0 -27 Q 1.5 -29 3.5 -27" stroke={fc} strokeWidth={1.5} fill="none" strokeLinecap="round" />
         </>
       )}
-      {/* Shirt */}
+      {/* Body */}
+      <line x1={0} y1={-21} x2={0} y2={10} stroke={BODY_COLOR} strokeWidth={2} />
+      <line x1={-13} y1={-5} x2={13} y2={-5} stroke={BODY_COLOR} strokeWidth={2} />
+      <line x1={0} y1={10} x2={-10} y2={32} stroke={BODY_COLOR} strokeWidth={2} />
+      <line x1={0} y1={10} x2={10} y2={32} stroke={BODY_COLOR} strokeWidth={2} />
+      {/* Shirt — over body lines */}
       {shirt === "sweater" && (
         <>
           <rect x={-7} y={-18} width={14} height={24} rx={2} fill="#7c3aed" />
@@ -166,11 +171,6 @@ function TinyFigure({
           <polygon points="2.5,-16 0,-14 2.5,-12" fill="#ef4444" />
         </>
       )}
-      {/* Body */}
-      <line x1={0} y1={-21} x2={0} y2={10} stroke={BODY_COLOR} strokeWidth={2} />
-      <line x1={-13} y1={-5} x2={13} y2={-5} stroke={BODY_COLOR} strokeWidth={2} />
-      <line x1={0} y1={10} x2={-10} y2={32} stroke={BODY_COLOR} strokeWidth={2} />
-      <line x1={0} y1={10} x2={10} y2={32} stroke={BODY_COLOR} strokeWidth={2} />
     </svg>
   );
 }

@@ -156,7 +156,12 @@ function MiniStickFigure({ face, hat, faceColor, shirt }: { face: string; hat: s
           <path d="M -4 -27 Q -2 -25 0 -27 Q 2 -29 4 -27" stroke={fc} strokeWidth={1.5} fill="none" strokeLinecap="round" />
         </>
       )}
-      {/* Shirt */}
+      {/* Body */}
+      <line x1={0} y1={-20} x2={0} y2={10} stroke={BODY_COLOR} strokeWidth={2} />
+      <line x1={-15} y1={-5} x2={15} y2={-5} stroke={BODY_COLOR} strokeWidth={2} />
+      <line x1={0} y1={10} x2={-12} y2={35} stroke={BODY_COLOR} strokeWidth={2} />
+      <line x1={0} y1={10} x2={12} y2={35} stroke={BODY_COLOR} strokeWidth={2} />
+      {/* Shirt — over body lines */}
       {shirt === "sweater" && (
         <>
           <rect x={-8} y={-18} width={16} height={26} rx={2} fill="#7c3aed" />
@@ -191,11 +196,6 @@ function MiniStickFigure({ face, hat, faceColor, shirt }: { face: string; hat: s
           <polygon points="3,-16 0,-14 3,-12" fill="#ef4444" />
         </>
       )}
-      {/* Body */}
-      <line x1={0} y1={-20} x2={0} y2={10} stroke={BODY_COLOR} strokeWidth={2} />
-      <line x1={-15} y1={-5} x2={15} y2={-5} stroke={BODY_COLOR} strokeWidth={2} />
-      <line x1={0} y1={10} x2={-12} y2={35} stroke={BODY_COLOR} strokeWidth={2} />
-      <line x1={0} y1={10} x2={12} y2={35} stroke={BODY_COLOR} strokeWidth={2} />
     </svg>
   );
 }
