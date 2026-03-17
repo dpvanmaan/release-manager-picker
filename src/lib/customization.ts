@@ -1,10 +1,14 @@
 export const FACES = [
-  { id: "neutral", label: "Neutral", emoji: "😐" },
-  { id: "happy",   label: "Happy",   emoji: "😊" },
-  { id: "angry",   label: "Angry",   emoji: "😤" },
-  { id: "shocked", label: "Shocked", emoji: "😮" },
-  { id: "cool",    label: "Cool",    emoji: "😎" },
-  { id: "goofy",   label: "Goofy",   emoji: "😜" },
+  { id: "neutral",  label: "Neutral",   emoji: "😐" },
+  { id: "happy",    label: "Happy",     emoji: "😊" },
+  { id: "bigsmile", label: "Big Smile", emoji: "😁" },
+  { id: "smirk",    label: "Smirk",     emoji: "😏" },
+  { id: "shocked",  label: "Shocked",   emoji: "😮" },
+  { id: "cool",     label: "Cool",      emoji: "😎" },
+  { id: "goofy",    label: "Goofy",     emoji: "😜" },
+  { id: "beard",    label: "Beard",     emoji: "🧔" },
+  { id: "lashes",   label: "Lashes",    emoji: "💁" },
+  { id: "glam",     label: "Glam",      emoji: "💄" },
 ] as const;
 
 export const HATS = [

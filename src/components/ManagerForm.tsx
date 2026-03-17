@@ -72,11 +72,58 @@ function MiniStickFigure({ face, hat, color }: { face: string; hat: string; colo
           <path d="M -4 -27 Q 0 -23 4 -27" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
         </>
       )}
-      {face === "angry" && (
+      {face === "bigsmile" && (
         <>
-          <line x1={-5} y1={-36} x2={-2} y2={-33} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
-          <line x1={2} y1={-33} x2={5} y2={-36} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
-          <path d="M -4 -27 Q 0 -31 4 -27" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+          <circle cx={-3.5} cy={-32} r={1.2} fill={color} />
+          <circle cx={3.5} cy={-32} r={1.2} fill={color} />
+          <path d="M -5 -26.5 Q 0 -21 5 -26.5" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+        </>
+      )}
+      {face === "smirk" && (
+        <>
+          <circle cx={-3.5} cy={-32} r={1.2} fill={color} />
+          <path d="M 2 -32 Q 3.5 -31 5 -32" stroke={color} strokeWidth={1.2} fill="none" strokeLinecap="round" />
+          <path d="M -1 -27 Q 2 -24.5 4 -26" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+        </>
+      )}
+      {face === "beard" && (
+        <>
+          <circle cx={-3.5} cy={-32} r={1.2} fill={color} />
+          <circle cx={3.5} cy={-32} r={1.2} fill={color} />
+          <path d="M -3 -26 Q 0 -24 3 -26" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+          <path d="M -4 -23 Q 0 -21 4 -23" stroke={color} strokeWidth={2} fill="none" strokeLinecap="round" />
+          <path d="M -7,-22 Q -8,-14 0,-12 Q 8,-14 7,-22 Z" fill={color} opacity={0.75} />
+        </>
+      )}
+      {face === "lashes" && (
+        <>
+          <circle cx={-3.5} cy={-31.5} r={1.3} fill={color} />
+          <line x1={-5.5} y1={-33} x2={-6.5} y2={-36} stroke={color} strokeWidth={1.2} strokeLinecap="round" />
+          <line x1={-3.5} y1={-33.5} x2={-3.5} y2={-37} stroke={color} strokeWidth={1.2} strokeLinecap="round" />
+          <line x1={-1.5} y1={-33} x2={-0.5} y2={-36} stroke={color} strokeWidth={1.2} strokeLinecap="round" />
+          <circle cx={3.5} cy={-31.5} r={1.3} fill={color} />
+          <line x1={1.5} y1={-33} x2={0.5} y2={-36} stroke={color} strokeWidth={1.2} strokeLinecap="round" />
+          <line x1={3.5} y1={-33.5} x2={3.5} y2={-37} stroke={color} strokeWidth={1.2} strokeLinecap="round" />
+          <line x1={5.5} y1={-33} x2={6.5} y2={-36} stroke={color} strokeWidth={1.2} strokeLinecap="round" />
+          <path d="M -4 -27 Q 0 -23 4 -27" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+        </>
+      )}
+      {face === "glam" && (
+        <>
+          <circle cx={-7} cy={-26} r={3} fill="#f472b6" opacity={0.35} />
+          <circle cx={7} cy={-26} r={3} fill="#f472b6" opacity={0.35} />
+          <circle cx={-3.5} cy={-31.5} r={1.5} fill={color} />
+          <line x1={-6} y1={-32.5} x2={-7.5} y2={-36} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
+          <line x1={-4.5} y1={-33.5} x2={-5} y2={-37.5} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
+          <line x1={-3} y1={-33.5} x2={-3} y2={-37.5} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
+          <line x1={-1.5} y1={-33} x2={-0.5} y2={-36.5} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
+          <circle cx={3.5} cy={-31.5} r={1.5} fill={color} />
+          <line x1={1.5} y1={-33} x2={0.5} y2={-36.5} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
+          <line x1={3} y1={-33.5} x2={3} y2={-37.5} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
+          <line x1={4.5} y1={-33.5} x2={5} y2={-37.5} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
+          <line x1={6} y1={-32.5} x2={7.5} y2={-36} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
+          <path d="M -4 -26.5 Q -2 -24.5 0 -25.5 Q 2 -24.5 4 -26.5" stroke={color} strokeWidth={1.2} fill="none" strokeLinecap="round" />
+          <path d="M -4 -26.5 Q 0 -23 4 -26.5" stroke={color} strokeWidth={1.5} fill={color} fillOpacity={0.5} strokeLinecap="round" />
         </>
       )}
       {face === "shocked" && (
