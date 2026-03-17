@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import type { AnimationPhase } from "@/lib/types";
 import BigRedButton from "@/components/BigRedButton";
 import HatchAnimation from "@/components/HatchAnimation";
@@ -35,6 +35,7 @@ export default function HomePage() {
   const [eliminatedIds, setEliminatedIds] = useState<number[]>([]);
   const [historyKey, setHistoryKey] = useState(0);
   const [pausedIds, setPausedIds] = useState<Set<number>>(new Set());
+  const [pauseMenuOpen, setPauseMenuOpen] = useState(false);
 
   useEffect(() => {
     fetch("/api/managers")
@@ -110,6 +111,7 @@ export default function HomePage() {
     const updated = await fetch("/api/managers").then((r) => r.json());
     setManagers(updated);
     setPausedIds(new Set());
+    setPauseMenuOpen(false);
     setHistoryKey((k) => k + 1);
   }, [phase, eligibleManagers, pausedIds]);
 
@@ -160,31 +162,55 @@ export default function HomePage() {
         <>
           {/* Skip-this-pick toggles — only shown when idle */}
           {phase === "idle" && managers.length > 1 && (
-            <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-3">
-              <p className="mb-2 text-xs text-zinc-500">Skip from this pick:</p>
-              <div className="flex flex-wrap gap-2">
-                {managers.map((m) => {
-                  const paused = pausedIds.has(m.id);
-                  return (
-                    <button
-                      key={m.id}
-                      onClick={() => togglePause(m.id)}
-                      className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                        paused
-                          ? "bg-zinc-700 text-zinc-400 line-through"
-                          : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
-                      }`}
-                    >
-                      {m.name}
-                    </button>
-                  );
-                })}
-              </div>
-              {pausedIds.size > 0 && eligibleManagers.length === 0 && (
-                <p className="mt-2 text-xs text-red-400">
-                  At least one member must be eligible.
-                </p>
-              )}
+            <div className="rounded-lg border border-zinc-800 bg-zinc-900/50">
+              <button
+                onClick={() => setPauseMenuOpen((o) => !o)}
+                className="flex w-full items-center justify-between px-3 py-2 text-left"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="text-xs text-zinc-500">Skip from this pick</span>
+                  {pausedIds.size > 0 && (
+                    <span className="rounded-full bg-zinc-700 px-2 py-0.5 text-xs text-zinc-300">
+                      {pausedIds.size} skipped
+                    </span>
+                  )}
+                </span>
+                <span className="text-xs text-zinc-500 transition-transform duration-200" style={{ display: "inline-block", transform: pauseMenuOpen ? "rotate(180deg)" : "rotate(0deg)" }}>
+                  ▾
+                </span>
+              </button>
+              <motion.div
+                initial={false}
+                animate={{ height: pauseMenuOpen ? "auto" : 0, opacity: pauseMenuOpen ? 1 : 0 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
+                style={{ overflow: "hidden" }}
+              >
+                <div className="px-3 pb-3">
+                  <div className="flex flex-wrap gap-2">
+                    {managers.map((m) => {
+                      const paused = pausedIds.has(m.id);
+                      return (
+                        <button
+                          key={m.id}
+                          onClick={() => togglePause(m.id)}
+                          className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                            paused
+                              ? "bg-zinc-700 text-zinc-400 line-through"
+                              : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+                          }`}
+                        >
+                          {m.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {pausedIds.size > 0 && eligibleManagers.length === 0 && (
+                    <p className="mt-2 text-xs text-red-400">
+                      At least one member must be eligible.
+                    </p>
+                  )}
+                </div>
+              </motion.div>
             </div>
           )}
 
