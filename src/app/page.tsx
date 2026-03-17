@@ -148,7 +148,7 @@ export default function HomePage() {
           🎭 Release Roulette 🎭
         </h1>
         <p className="mt-2 text-zinc-400">
-          Who will manage this week&apos;s release? The algorithm decides.
+          Your Fate Awaits
         </p>
       </div>
 

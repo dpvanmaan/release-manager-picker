@@ -123,6 +123,14 @@ function FaceExpression({ face, featureColor }: { face: string; featureColor: st
           <path d="M -4 -27 Q -2 -25 0 -27 Q 2 -29 4 -27" stroke={featureColor} strokeWidth={1.5} fill="none" strokeLinecap="round" />
         </>
       );
+    case "frown":
+      return (
+        <>
+          <circle cx={-3.5} cy={-32} r={1.2} fill={featureColor} />
+          <circle cx={3.5} cy={-32} r={1.2} fill={featureColor} />
+          <path d="M -4 -23 Q 0 -27 4 -23" stroke={featureColor} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+        </>
+      );
     default:
       return null;
   }
@@ -414,22 +422,30 @@ export default function HatchAnimation({
         />
       </svg>
 
-      {/* Below-stage: manager chair area */}
+      {/* Below-stage: fate area */}
       <div className="flex min-h-[80px] items-center justify-center bg-zinc-950/60 py-2">
         <AnimatePresence>
           {(phase === "seated" || phase === "celebrating") && winner && (
             <motion.div
-              key="chair"
+              key="winner-figure"
               initial={{ opacity: 0, scale: 0.5, y: -30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               className="flex flex-col items-center gap-1"
             >
-              <div className="text-4xl">🪑</div>
+              <svg viewBox="-20 -80 40 100" width={60} height={90} aria-hidden>
+                <HatDecoration hat={winner.hat ?? "none"} color={winner.color ?? "#f8fafc"} />
+                <circle cx={0} cy={-30} r={10} stroke={BODY_COLOR} strokeWidth={2} fill={winner.color ?? "#f8fafc"} />
+                <FaceExpression face="frown" featureColor={getContrastColor(winner.color ?? "#f8fafc")} />
+                <line x1={0} y1={-20} x2={0} y2={10} stroke={BODY_COLOR} strokeWidth={2} />
+                <line x1={-15} y1={-5} x2={15} y2={-5} stroke={BODY_COLOR} strokeWidth={2} />
+                <line x1={0} y1={10} x2={-12} y2={35} stroke={BODY_COLOR} strokeWidth={2} />
+                <line x1={0} y1={10} x2={12} y2={35} stroke={BODY_COLOR} strokeWidth={2} />
+                <ShirtDecoration shirt={winner.shirt ?? "none"} />
+              </svg>
               <div className="font-bangers text-xl tracking-wide text-yellow-400">
                 {winner.name}
               </div>
-              <div className="text-xs text-zinc-500">Release Manager</div>
             </motion.div>
           )}
           {phase === "idle" && (
@@ -439,7 +455,7 @@ export default function HatchAnimation({
               animate={{ opacity: 1 }}
               className="text-zinc-600 text-sm"
             >
-              🪑 The chair awaits...
+              Your Fate Awaits
             </motion.div>
           )}
         </AnimatePresence>
