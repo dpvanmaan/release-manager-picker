@@ -113,16 +113,6 @@ function TinyFigure({ face = "neutral", hat = "none", color = "#e2e8f0" }: { fac
           <path d="M -3.5 -26.5 Q 0 -23 3.5 -26.5" stroke={color} strokeWidth={1.5} fill={color} fillOpacity={0.5} strokeLinecap="round" />
         </>
       )}
-      {face === "longhair" && (
-        <>
-          <path d="M -9,-30 Q -7,-42 0,-43 Q 7,-42 9,-30 Z" fill={color} />
-          <path d="M -8,-36 Q -12,-21 -11,-5 Q -11,7 -8,17" stroke={color} strokeWidth={3} fill="none" strokeLinecap="round" />
-          <path d="M 8,-36 Q 12,-21 11,-5 Q 11,7 8,17" stroke={color} strokeWidth={3} fill="none" strokeLinecap="round" />
-          <circle cx={-3} cy={-32} r={1} fill={color} />
-          <circle cx={3} cy={-32} r={1} fill={color} />
-          <path d="M -3.5 -27 Q 0 -23.5 3.5 -27" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
-        </>
-      )}
       {face === "shocked" && (
         <circle cx={0} cy={-26} r={2.2} stroke={color} strokeWidth={1.5} fill="none" />
       )}

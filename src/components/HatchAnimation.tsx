@@ -105,22 +105,6 @@ function FaceExpression({ face, color }: { face: string; color: string }) {
           <path d="M -4 -26.5 Q 0 -23 4 -26.5" stroke={color} strokeWidth={1.5} fill={color} fillOpacity={0.5} strokeLinecap="round" />
         </>
       );
-    case "longhair":
-      return (
-        <>
-          {/* Hair top covering */}
-          <path d="M -10,-30 Q -8,-43 0,-44 Q 8,-43 10,-30 Z" fill={color} />
-          {/* Left strand flowing down */}
-          <path d="M -9,-37 Q -13,-22 -12,-5 Q -12,8 -9,18" stroke={color} strokeWidth={3.5} fill="none" strokeLinecap="round" />
-          {/* Right strand flowing down */}
-          <path d="M 9,-37 Q 13,-22 12,-5 Q 12,8 9,18" stroke={color} strokeWidth={3.5} fill="none" strokeLinecap="round" />
-          {/* Eyes */}
-          <circle cx={-3.5} cy={-32} r={1.2} fill={color} />
-          <circle cx={3.5} cy={-32} r={1.2} fill={color} />
-          {/* Smile */}
-          <path d="M -4 -27 Q 0 -23 4 -27" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
-        </>
-      );
     case "shocked":
       return (
         <>
