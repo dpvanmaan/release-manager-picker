@@ -17,7 +17,13 @@ export async function POST(request: Request) {
   }
 
   try {
-    const manager = await adapter.createManager(name, body.avatar_url ?? null);
+    const manager = await adapter.createManager(
+      name,
+      body.avatar_url ?? null,
+      body.face,
+      body.hat,
+      body.color,
+    );
     return NextResponse.json(manager, { status: 201 });
   } catch (err: unknown) {
     if (err instanceof Error && (err as NodeJS.ErrnoException & { code?: string }).code === "DUPLICATE") {

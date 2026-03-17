@@ -4,6 +4,9 @@ export interface Manager {
   avatar_url: string | null;
   is_active: 0 | 1;
   created_at: string;
+  face: string;
+  hat: string;
+  color: string;
 }
 
 export interface SelectionHistoryRow {

@@ -22,7 +22,7 @@ export class SqliteAdapter implements DbAdapter {
     return (db.prepare("SELECT * FROM managers WHERE id = ?").get(id) as Manager) ?? null;
   }
 
-  async createManager(name: string, avatarUrl: string | null): Promise<Manager> {
+  async createManager(name: string, avatarUrl: string | null, face = "neutral", hat = "none", color = "#e2e8f0"): Promise<Manager> {
     const db = getDb();
 
     const existing = db
@@ -33,17 +33,17 @@ export class SqliteAdapter implements DbAdapter {
     }
 
     const result = db
-      .prepare("INSERT INTO managers (name, avatar_url) VALUES (?, ?)")
-      .run(name, avatarUrl);
+      .prepare("INSERT INTO managers (name, avatar_url, face, hat, color) VALUES (?, ?, ?, ?, ?)")
+      .run(name, avatarUrl, face, hat, color);
 
     return db.prepare("SELECT * FROM managers WHERE id = ?").get(result.lastInsertRowid) as Manager;
   }
 
-  async updateManager(id: string | number, name: string): Promise<{ changed: boolean }> {
+  async updateManager(id: string | number, name: string, face?: string, hat?: string, color?: string): Promise<{ changed: boolean }> {
     const db = getDb();
     const result = db
-      .prepare("UPDATE managers SET name = ? WHERE id = ? AND is_active = 1")
-      .run(name, id);
+      .prepare("UPDATE managers SET name = ?, face = COALESCE(?, face), hat = COALESCE(?, hat), color = COALESCE(?, color) WHERE id = ? AND is_active = 1")
+      .run(name, face ?? null, hat ?? null, color ?? null, id);
     return { changed: result.changes > 0 };
   }
 

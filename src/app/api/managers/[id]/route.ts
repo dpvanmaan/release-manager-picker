@@ -14,7 +14,7 @@ export async function PUT(
     return NextResponse.json({ error: "Name is required" }, { status: 400 });
   }
 
-  const { changed } = await adapter.updateManager(id, name);
+  const { changed } = await adapter.updateManager(id, name, body.face, body.hat, body.color);
   if (!changed) {
     return NextResponse.json({ error: "Manager not found" }, { status: 404 });
   }

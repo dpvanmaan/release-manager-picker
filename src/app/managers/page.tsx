@@ -10,6 +10,9 @@ interface Manager {
   name: string;
   last_picked: string | null;
   pick_count: number;
+  face?: string;
+  hat?: string;
+  color?: string;
 }
 
 export default function ManagersPage() {

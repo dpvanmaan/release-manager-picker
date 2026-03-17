@@ -5,6 +5,9 @@ import type { AnimationPhase } from "@/lib/types";
 interface Manager {
   id: number;
   name: string;
+  face?: string;
+  hat?: string;
+  color?: string;
 }
 
 interface Props {
@@ -21,6 +24,140 @@ const HATCH_X = STAGE_W / 2 - 40;
 const HATCH_W = 80;
 const FIGURE_SPACING = 70;
 
+function FaceExpression({ face, color }: { face: string; color: string }) {
+  // All coords relative to head center at (0, -30), r=10
+  switch (face) {
+    case "happy":
+      return (
+        <>
+          <circle cx={-3.5} cy={-32} r={1.2} fill={color} />
+          <circle cx={3.5} cy={-32} r={1.2} fill={color} />
+          <path d="M -4 -27 Q 0 -23 4 -27" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+        </>
+      );
+    case "angry":
+      return (
+        <>
+          <line x1={-5} y1={-36} x2={-2} y2={-33} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+          <line x1={2} y1={-33} x2={5} y2={-36} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+          <path d="M -4 -27 Q 0 -31 4 -27" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+        </>
+      );
+    case "shocked":
+      return (
+        <>
+          <line x1={-5} y1={-35} x2={-2} y2={-32} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+          <line x1={2} y1={-32} x2={5} y2={-35} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+          <circle cx={0} cy={-26} r={2.5} stroke={color} strokeWidth={1.5} fill="none" />
+        </>
+      );
+    case "cool":
+      return (
+        <>
+          {/* Left lens */}
+          <rect x={-5.5} y={-32} width={4} height={3} rx={0.5} fill="#1e293b" stroke={color} strokeWidth={1} />
+          {/* Right lens */}
+          <rect x={1.5} y={-32} width={4} height={3} rx={0.5} fill="#1e293b" stroke={color} strokeWidth={1} />
+          {/* Bridge */}
+          <line x1={-1.5} y1={-30.5} x2={1.5} y2={-30.5} stroke={color} strokeWidth={1} />
+          {/* Side arms */}
+          <line x1={-5.5} y1={-30.5} x2={-7} y2={-30.5} stroke={color} strokeWidth={1} />
+          <line x1={5.5} y1={-30.5} x2={7} y2={-30.5} stroke={color} strokeWidth={1} />
+          <path d="M -4 -27 Q 0 -23 4 -27" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+        </>
+      );
+    case "goofy":
+      return (
+        <>
+          {/* Normal left eye */}
+          <circle cx={-3.5} cy={-32} r={1.2} fill={color} />
+          {/* Winking right eye */}
+          <path d="M 2 -32 Q 3.5 -33.5 5 -32" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+          {/* Wavy mouth */}
+          <path d="M -4 -27 Q -2 -25 0 -27 Q 2 -29 4 -27" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+        </>
+      );
+    default:
+      return null;
+  }
+}
+
+function HatDecoration({ hat, color }: { hat: string; color: string }) {
+  // All coords relative to figure origin; head top is at y = -30 - 10 = -40
+  switch (hat) {
+    case "tophat":
+      return (
+        <>
+          {/* Brim */}
+          <rect x={-8} y={-44} width={16} height={3} rx={1} fill={color} />
+          {/* Body */}
+          <rect x={-5} y={-58} width={10} height={14} rx={1} fill={color} />
+          {/* Band */}
+          <rect x={-5} y={-46} width={10} height={2.5} fill="#27272a" />
+        </>
+      );
+    case "party":
+      return (
+        <>
+          {/* Cone */}
+          <polygon points="0,-68 -8,-40 8,-40" fill="#ec4899" opacity={0.9} />
+          {/* Stripes */}
+          <line x1={-4} y1={-54} x2={4} y2={-54} stroke="#fbbf24" strokeWidth={1.5} opacity={0.8} />
+          <line x1={-6} y1={-47} x2={6} y2={-47} stroke="#60a5fa" strokeWidth={1.5} opacity={0.8} />
+          {/* Tip star */}
+          <circle cx={0} cy={-68} r={2} fill="#fbbf24" />
+          {/* Dots */}
+          <circle cx={-3} cy={-50} r={1.5} fill="#fbbf24" />
+          <circle cx={3} cy={-57} r={1.5} fill="#60a5fa" />
+          <circle cx={0} cy={-44} r={1.5} fill="#a855f7" />
+        </>
+      );
+    case "cowboy":
+      return (
+        <>
+          {/* Dome */}
+          <ellipse cx={0} cy={-49} rx={7} ry={6} fill="#d97706" />
+          {/* Brim */}
+          <ellipse cx={0} cy={-43} rx={12} ry={3} fill="#b45309" />
+          {/* Band */}
+          <rect x={-7} y={-46} width={14} height={2} fill="#92400e" />
+        </>
+      );
+    case "wizard":
+      return (
+        <>
+          {/* Cone */}
+          <polygon points="0,-72 -7,-40 7,-40" fill="#7c3aed" />
+          {/* Stars */}
+          <circle cx={-2} cy={-55} r={1.5} fill="#fbbf24" />
+          <circle cx={3} cy={-63} r={1.2} fill="#fbbf24" />
+          <circle cx={-4} cy={-46} r={1} fill="#a78bfa" />
+          {/* Brim */}
+          <ellipse cx={0} cy={-40} rx={8} ry={2} fill="#6d28d9" />
+          {/* Tip sparkle */}
+          <circle cx={0} cy={-72} r={1.5} fill="#fbbf24" />
+        </>
+      );
+    case "crown":
+      return (
+        <>
+          <path
+            d="M -7,-40 L -7,-50 L -3.5,-45 L 0,-53 L 3.5,-45 L 7,-50 L 7,-40 Z"
+            fill="#fbbf24"
+            stroke="#d97706"
+            strokeWidth={1}
+          />
+          {/* Gems */}
+          <circle cx={0} cy={-47} r={1.5} fill="#ef4444" />
+          <circle cx={-4.5} cy={-43} r={1} fill="#60a5fa" />
+          <circle cx={4.5} cy={-43} r={1} fill="#4ade80" />
+        </>
+      );
+    default:
+      return null;
+  }
+}
+
 function StickFigure({
   name,
   x,
@@ -31,6 +168,9 @@ function StickFigure({
   isFalling,
   isSeated,
   isWalkingToHatch,
+  face = "neutral",
+  hat = "none",
+  color = "#e2e8f0",
 }: {
   name: string;
   x: number;
@@ -41,6 +181,9 @@ function StickFigure({
   isFalling: boolean;
   isSeated: boolean;
   isWalkingToHatch: boolean;
+  face?: string;
+  hat?: string;
+  color?: string;
 }) {
   const baseY = FLOOR_Y - 50;
 
@@ -77,16 +220,20 @@ function StickFigure({
           : undefined
       }
     >
+      {/* Hat */}
+      <HatDecoration hat={hat} color={color} />
       {/* Head */}
-      <circle cx={0} cy={-30} r={10} stroke="#e2e8f0" strokeWidth={2} fill="none" />
+      <circle cx={0} cy={-30} r={10} stroke={color} strokeWidth={2} fill="none" />
+      {/* Face expression */}
+      <FaceExpression face={face} color={color} />
       {/* Body */}
-      <line x1={0} y1={-20} x2={0} y2={10} stroke="#e2e8f0" strokeWidth={2} />
+      <line x1={0} y1={-20} x2={0} y2={10} stroke={color} strokeWidth={2} />
       {/* Arms */}
-      <line x1={-15} y1={-5} x2={15} y2={-5} stroke="#e2e8f0" strokeWidth={2} />
+      <line x1={-15} y1={-5} x2={15} y2={-5} stroke={color} strokeWidth={2} />
       {/* Left leg */}
-      <line x1={0} y1={10} x2={-12} y2={35} stroke="#e2e8f0" strokeWidth={2} />
+      <line x1={0} y1={10} x2={-12} y2={35} stroke={color} strokeWidth={2} />
       {/* Right leg */}
-      <line x1={0} y1={10} x2={12} y2={35} stroke="#e2e8f0" strokeWidth={2} />
+      <line x1={0} y1={10} x2={12} y2={35} stroke={color} strokeWidth={2} />
       {/* Name tag */}
       <text
         x={0}
@@ -149,6 +296,9 @@ export default function HatchAnimation({
               isFalling={isFalling}
               isSeated={isWinner && (phase === "seated" || phase === "celebrating")}
               isWalkingToHatch={isWinner && phase === "walking"}
+              face={m.face}
+              hat={m.hat}
+              color={m.color}
             />
           );
         })}
