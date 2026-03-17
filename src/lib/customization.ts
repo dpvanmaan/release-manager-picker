@@ -50,7 +50,7 @@ export const DEFAULT_COLOR: ColorId = "#f8fafc";
 export const DEFAULT_SHIRT: ShirtId = "none";
 
 /** Fixed stroke color for all body parts (head outline, torso, arms, legs). */
-export const BODY_COLOR = "#000000";
+export const BODY_COLOR = "#94a3b8";
 
 /** Returns a dark or light color that is legible on top of `hex`. */
 export function getContrastColor(hex: string): string {
