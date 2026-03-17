@@ -34,7 +34,8 @@ export class PostgresAdapter implements DbAdapter {
     `;
     await db`ALTER TABLE managers ADD COLUMN IF NOT EXISTS face TEXT NOT NULL DEFAULT 'neutral'`;
     await db`ALTER TABLE managers ADD COLUMN IF NOT EXISTS hat TEXT NOT NULL DEFAULT 'none'`;
-    await db`ALTER TABLE managers ADD COLUMN IF NOT EXISTS color TEXT NOT NULL DEFAULT '#e2e8f0'`;
+    await db`ALTER TABLE managers ADD COLUMN IF NOT EXISTS color TEXT NOT NULL DEFAULT '#f8fafc'`;
+    await db`ALTER TABLE managers ADD COLUMN IF NOT EXISTS shirt TEXT NOT NULL DEFAULT 'none'`;
     await db`
       CREATE TABLE IF NOT EXISTS selection_history (
         id          SERIAL PRIMARY KEY,
@@ -68,7 +69,7 @@ export class PostgresAdapter implements DbAdapter {
     return rows[0] ?? null;
   }
 
-  async createManager(name: string, avatarUrl: string | null, face = "neutral", hat = "none", color = "#e2e8f0"): Promise<Manager> {
+  async createManager(name: string, avatarUrl: string | null, face = "neutral", hat = "none", color = "#f8fafc", shirt = "none"): Promise<Manager> {
     await this.ensureSchema();
     const existing = await sql()`
       SELECT id FROM managers WHERE name = ${name} AND is_active = 1
@@ -77,20 +78,21 @@ export class PostgresAdapter implements DbAdapter {
       throw Object.assign(new Error("Name already exists"), { code: "DUPLICATE" });
     }
     const rows = await sql()<Manager[]>`
-      INSERT INTO managers (name, avatar_url, face, hat, color) VALUES (${name}, ${avatarUrl}, ${face}, ${hat}, ${color})
+      INSERT INTO managers (name, avatar_url, face, hat, color, shirt) VALUES (${name}, ${avatarUrl}, ${face}, ${hat}, ${color}, ${shirt})
       RETURNING *
     `;
     return rows[0];
   }
 
-  async updateManager(id: string | number, name: string, face?: string, hat?: string, color?: string): Promise<{ changed: boolean }> {
+  async updateManager(id: string | number, name: string, face?: string, hat?: string, color?: string, shirt?: string): Promise<{ changed: boolean }> {
     await this.ensureSchema();
     const result = await sql()`
       UPDATE managers SET
         name = ${name},
         face = COALESCE(${face ?? null}, face),
         hat = COALESCE(${hat ?? null}, hat),
-        color = COALESCE(${color ?? null}, color)
+        color = COALESCE(${color ?? null}, color),
+        shirt = COALESCE(${shirt ?? null}, shirt)
       WHERE id = ${Number(id)} AND is_active = 1
     `;
     return { changed: result.count > 0 };

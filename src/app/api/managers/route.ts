@@ -23,6 +23,7 @@ export async function POST(request: Request) {
       body.face,
       body.hat,
       body.color,
+      body.shirt,
     );
     return NextResponse.json(manager, { status: 201 });
   } catch (err: unknown) {

@@ -7,6 +7,7 @@ export interface Manager {
   face: string;
   hat: string;
   color: string;
+  shirt: string;
 }
 
 export interface SelectionHistoryRow {

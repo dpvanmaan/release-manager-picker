@@ -19,8 +19,8 @@ export interface HistoryResult {
 export interface DbAdapter {
   getManagers(): Promise<ManagerWithStats[]>;
   getManagerById(id: string | number): Promise<Manager | null>;
-  createManager(name: string, avatarUrl: string | null, face?: string, hat?: string, color?: string): Promise<Manager>;
-  updateManager(id: string | number, name: string, face?: string, hat?: string, color?: string): Promise<{ changed: boolean }>;
+  createManager(name: string, avatarUrl: string | null, face?: string, hat?: string, color?: string, shirt?: string): Promise<Manager>;
+  updateManager(id: string | number, name: string, face?: string, hat?: string, color?: string, shirt?: string): Promise<{ changed: boolean }>;
   deactivateManager(id: string | number): Promise<{ changed: boolean }>;
   getManagersForSelection(): Promise<ManagerForSelection[]>;
   recordSelection(managerId: number, notes: string): Promise<void>;

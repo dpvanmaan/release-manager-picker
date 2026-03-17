@@ -40,7 +40,8 @@ function getDb(): Database.Database {
   // Idempotent migrations for customization columns
   try { db.exec("ALTER TABLE managers ADD COLUMN face TEXT NOT NULL DEFAULT 'neutral'"); } catch {}
   try { db.exec("ALTER TABLE managers ADD COLUMN hat TEXT NOT NULL DEFAULT 'none'"); } catch {}
-  try { db.exec("ALTER TABLE managers ADD COLUMN color TEXT NOT NULL DEFAULT '#e2e8f0'"); } catch {}
+  try { db.exec("ALTER TABLE managers ADD COLUMN color TEXT NOT NULL DEFAULT '#f8fafc'"); } catch {}
+  try { db.exec("ALTER TABLE managers ADD COLUMN shirt TEXT NOT NULL DEFAULT 'none'"); } catch {}
 
   return db;
 }

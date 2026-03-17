@@ -1,6 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import type { AnimationPhase } from "@/lib/types";
+import { BODY_COLOR, getContrastColor } from "@/lib/customization";
 
 interface Manager {
   id: number;
@@ -8,6 +9,7 @@ interface Manager {
   face?: string;
   hat?: string;
   color?: string;
+  shirt?: string;
 }
 
 interface Props {
@@ -24,119 +26,101 @@ const HATCH_X = STAGE_W / 2 - 40;
 const HATCH_W = 80;
 const FIGURE_SPACING = 70;
 
-function FaceExpression({ face, color }: { face: string; color: string }) {
+function FaceExpression({ face, featureColor }: { face: string; featureColor: string }) {
   // All coords relative to head center at (0, -30), r=10
   switch (face) {
     case "happy":
       return (
         <>
-          <circle cx={-3.5} cy={-32} r={1.2} fill={color} />
-          <circle cx={3.5} cy={-32} r={1.2} fill={color} />
-          <path d="M -4 -27 Q 0 -23 4 -27" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+          <circle cx={-3.5} cy={-32} r={1.2} fill={featureColor} />
+          <circle cx={3.5} cy={-32} r={1.2} fill={featureColor} />
+          <path d="M -4 -27 Q 0 -23 4 -27" stroke={featureColor} strokeWidth={1.5} fill="none" strokeLinecap="round" />
         </>
       );
     case "bigsmile":
       return (
         <>
-          <circle cx={-3.5} cy={-32} r={1.2} fill={color} />
-          <circle cx={3.5} cy={-32} r={1.2} fill={color} />
-          <path d="M -5 -26.5 Q 0 -21 5 -26.5" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+          <circle cx={-3.5} cy={-32} r={1.2} fill={featureColor} />
+          <circle cx={3.5} cy={-32} r={1.2} fill={featureColor} />
+          <path d="M -5 -26.5 Q 0 -21 5 -26.5" stroke={featureColor} strokeWidth={1.5} fill="none" strokeLinecap="round" />
         </>
       );
     case "smirk":
       return (
         <>
-          <circle cx={-3.5} cy={-32} r={1.2} fill={color} />
-          {/* Half-closed right eye */}
-          <path d="M 2 -32 Q 3.5 -31 5 -32" stroke={color} strokeWidth={1.2} fill="none" strokeLinecap="round" />
-          {/* One-sided smirk */}
-          <path d="M -1 -27 Q 2 -24.5 4 -26" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+          <circle cx={-3.5} cy={-32} r={1.2} fill={featureColor} />
+          <path d="M 2 -32 Q 3.5 -31 5 -32" stroke={featureColor} strokeWidth={1.2} fill="none" strokeLinecap="round" />
+          <path d="M -1 -27 Q 2 -24.5 4 -26" stroke={featureColor} strokeWidth={1.5} fill="none" strokeLinecap="round" />
         </>
       );
     case "beard":
       return (
         <>
-          <circle cx={-3.5} cy={-32} r={1.2} fill={color} />
-          <circle cx={3.5} cy={-32} r={1.2} fill={color} />
-          <path d="M -3 -26 Q 0 -24 3 -26" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
-          {/* Mustache */}
-          <path d="M -4 -23 Q 0 -21 4 -23" stroke={color} strokeWidth={2} fill="none" strokeLinecap="round" />
-          {/* Beard fill */}
-          <path d="M -7,-22 Q -8,-14 0,-12 Q 8,-14 7,-22 Z" fill={color} opacity={0.75} />
+          <circle cx={-3.5} cy={-32} r={1.2} fill={featureColor} />
+          <circle cx={3.5} cy={-32} r={1.2} fill={featureColor} />
+          <path d="M -3 -26 Q 0 -24 3 -26" stroke={featureColor} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+          <path d="M -4 -23 Q 0 -21 4 -23" stroke={featureColor} strokeWidth={2} fill="none" strokeLinecap="round" />
+          <path d="M -7,-22 Q -8,-14 0,-12 Q 8,-14 7,-22 Z" fill={featureColor} opacity={0.75} />
         </>
       );
     case "lashes":
       return (
         <>
-          {/* Left eye with lashes */}
-          <circle cx={-3.5} cy={-31.5} r={1.3} fill={color} />
-          <line x1={-5.5} y1={-33} x2={-6.5} y2={-36} stroke={color} strokeWidth={1.2} strokeLinecap="round" />
-          <line x1={-3.5} y1={-33.5} x2={-3.5} y2={-37} stroke={color} strokeWidth={1.2} strokeLinecap="round" />
-          <line x1={-1.5} y1={-33} x2={-0.5} y2={-36} stroke={color} strokeWidth={1.2} strokeLinecap="round" />
-          {/* Right eye with lashes */}
-          <circle cx={3.5} cy={-31.5} r={1.3} fill={color} />
-          <line x1={1.5} y1={-33} x2={0.5} y2={-36} stroke={color} strokeWidth={1.2} strokeLinecap="round" />
-          <line x1={3.5} y1={-33.5} x2={3.5} y2={-37} stroke={color} strokeWidth={1.2} strokeLinecap="round" />
-          <line x1={5.5} y1={-33} x2={6.5} y2={-36} stroke={color} strokeWidth={1.2} strokeLinecap="round" />
-          {/* Smile */}
-          <path d="M -4 -27 Q 0 -23 4 -27" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+          <circle cx={-3.5} cy={-31.5} r={1.3} fill={featureColor} />
+          <line x1={-5.5} y1={-33} x2={-6.5} y2={-36} stroke={featureColor} strokeWidth={1.2} strokeLinecap="round" />
+          <line x1={-3.5} y1={-33.5} x2={-3.5} y2={-37} stroke={featureColor} strokeWidth={1.2} strokeLinecap="round" />
+          <line x1={-1.5} y1={-33} x2={-0.5} y2={-36} stroke={featureColor} strokeWidth={1.2} strokeLinecap="round" />
+          <circle cx={3.5} cy={-31.5} r={1.3} fill={featureColor} />
+          <line x1={1.5} y1={-33} x2={0.5} y2={-36} stroke={featureColor} strokeWidth={1.2} strokeLinecap="round" />
+          <line x1={3.5} y1={-33.5} x2={3.5} y2={-37} stroke={featureColor} strokeWidth={1.2} strokeLinecap="round" />
+          <line x1={5.5} y1={-33} x2={6.5} y2={-36} stroke={featureColor} strokeWidth={1.2} strokeLinecap="round" />
+          <path d="M -4 -27 Q 0 -23 4 -27" stroke={featureColor} strokeWidth={1.5} fill="none" strokeLinecap="round" />
         </>
       );
     case "glam":
       return (
         <>
-          {/* Rosy cheeks */}
-          <circle cx={-7} cy={-26} r={3} fill="#f472b6" opacity={0.35} />
-          <circle cx={7} cy={-26} r={3} fill="#f472b6" opacity={0.35} />
-          {/* Left eye with dramatic lashes */}
-          <circle cx={-3.5} cy={-31.5} r={1.5} fill={color} />
-          <line x1={-6} y1={-32.5} x2={-7.5} y2={-36} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
-          <line x1={-4.5} y1={-33.5} x2={-5} y2={-37.5} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
-          <line x1={-3} y1={-33.5} x2={-3} y2={-37.5} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
-          <line x1={-1.5} y1={-33} x2={-0.5} y2={-36.5} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
-          {/* Right eye with dramatic lashes */}
-          <circle cx={3.5} cy={-31.5} r={1.5} fill={color} />
-          <line x1={1.5} y1={-33} x2={0.5} y2={-36.5} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
-          <line x1={3} y1={-33.5} x2={3} y2={-37.5} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
-          <line x1={4.5} y1={-33.5} x2={5} y2={-37.5} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
-          <line x1={6} y1={-32.5} x2={7.5} y2={-36} stroke={color} strokeWidth={1.3} strokeLinecap="round" />
-          {/* Bold lips */}
-          <path d="M -4 -26.5 Q -2 -24.5 0 -25.5 Q 2 -24.5 4 -26.5" stroke={color} strokeWidth={1.2} fill="none" strokeLinecap="round" />
-          <path d="M -4 -26.5 Q 0 -23 4 -26.5" stroke={color} strokeWidth={1.5} fill={color} fillOpacity={0.5} strokeLinecap="round" />
+          <circle cx={-7} cy={-26} r={3} fill="#f472b6" opacity={0.45} />
+          <circle cx={7} cy={-26} r={3} fill="#f472b6" opacity={0.45} />
+          <circle cx={-3.5} cy={-31.5} r={1.5} fill={featureColor} />
+          <line x1={-6} y1={-32.5} x2={-7.5} y2={-36} stroke={featureColor} strokeWidth={1.3} strokeLinecap="round" />
+          <line x1={-4.5} y1={-33.5} x2={-5} y2={-37.5} stroke={featureColor} strokeWidth={1.3} strokeLinecap="round" />
+          <line x1={-3} y1={-33.5} x2={-3} y2={-37.5} stroke={featureColor} strokeWidth={1.3} strokeLinecap="round" />
+          <line x1={-1.5} y1={-33} x2={-0.5} y2={-36.5} stroke={featureColor} strokeWidth={1.3} strokeLinecap="round" />
+          <circle cx={3.5} cy={-31.5} r={1.5} fill={featureColor} />
+          <line x1={1.5} y1={-33} x2={0.5} y2={-36.5} stroke={featureColor} strokeWidth={1.3} strokeLinecap="round" />
+          <line x1={3} y1={-33.5} x2={3} y2={-37.5} stroke={featureColor} strokeWidth={1.3} strokeLinecap="round" />
+          <line x1={4.5} y1={-33.5} x2={5} y2={-37.5} stroke={featureColor} strokeWidth={1.3} strokeLinecap="round" />
+          <line x1={6} y1={-32.5} x2={7.5} y2={-36} stroke={featureColor} strokeWidth={1.3} strokeLinecap="round" />
+          <path d="M -4 -26.5 Q -2 -24.5 0 -25.5 Q 2 -24.5 4 -26.5" stroke={featureColor} strokeWidth={1.2} fill="none" strokeLinecap="round" />
+          <path d="M -4 -26.5 Q 0 -23 4 -26.5" stroke={featureColor} strokeWidth={1.5} fill={featureColor} fillOpacity={0.5} strokeLinecap="round" />
         </>
       );
     case "shocked":
       return (
         <>
-          <line x1={-5} y1={-35} x2={-2} y2={-32} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
-          <line x1={2} y1={-32} x2={5} y2={-35} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
-          <circle cx={0} cy={-26} r={2.5} stroke={color} strokeWidth={1.5} fill="none" />
+          <line x1={-5} y1={-35} x2={-2} y2={-32} stroke={featureColor} strokeWidth={1.5} strokeLinecap="round" />
+          <line x1={2} y1={-32} x2={5} y2={-35} stroke={featureColor} strokeWidth={1.5} strokeLinecap="round" />
+          <circle cx={0} cy={-26} r={2.5} stroke={featureColor} strokeWidth={1.5} fill="none" />
         </>
       );
     case "cool":
       return (
         <>
-          {/* Left lens */}
-          <rect x={-5.5} y={-32} width={4} height={3} rx={0.5} fill="#1e293b" stroke={color} strokeWidth={1} />
-          {/* Right lens */}
-          <rect x={1.5} y={-32} width={4} height={3} rx={0.5} fill="#1e293b" stroke={color} strokeWidth={1} />
-          {/* Bridge */}
-          <line x1={-1.5} y1={-30.5} x2={1.5} y2={-30.5} stroke={color} strokeWidth={1} />
-          {/* Side arms */}
-          <line x1={-5.5} y1={-30.5} x2={-7} y2={-30.5} stroke={color} strokeWidth={1} />
-          <line x1={5.5} y1={-30.5} x2={7} y2={-30.5} stroke={color} strokeWidth={1} />
-          <path d="M -4 -27 Q 0 -23 4 -27" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+          <rect x={-5.5} y={-32} width={4} height={3} rx={0.5} fill="#1e293b" stroke={featureColor} strokeWidth={1} />
+          <rect x={1.5} y={-32} width={4} height={3} rx={0.5} fill="#1e293b" stroke={featureColor} strokeWidth={1} />
+          <line x1={-1.5} y1={-30.5} x2={1.5} y2={-30.5} stroke={featureColor} strokeWidth={1} />
+          <line x1={-5.5} y1={-30.5} x2={-7} y2={-30.5} stroke={featureColor} strokeWidth={1} />
+          <line x1={5.5} y1={-30.5} x2={7} y2={-30.5} stroke={featureColor} strokeWidth={1} />
+          <path d="M -4 -27 Q 0 -23 4 -27" stroke={featureColor} strokeWidth={1.5} fill="none" strokeLinecap="round" />
         </>
       );
     case "goofy":
       return (
         <>
-          {/* Normal left eye */}
-          <circle cx={-3.5} cy={-32} r={1.2} fill={color} />
-          {/* Winking right eye */}
-          <path d="M 2 -32 Q 3.5 -33.5 5 -32" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
-          {/* Wavy mouth */}
-          <path d="M -4 -27 Q -2 -25 0 -27 Q 2 -29 4 -27" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+          <circle cx={-3.5} cy={-32} r={1.2} fill={featureColor} />
+          <path d="M 2 -32 Q 3.5 -33.5 5 -32" stroke={featureColor} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+          <path d="M -4 -27 Q -2 -25 0 -27 Q 2 -29 4 -27" stroke={featureColor} strokeWidth={1.5} fill="none" strokeLinecap="round" />
         </>
       );
     default:
@@ -145,30 +129,22 @@ function FaceExpression({ face, color }: { face: string; color: string }) {
 }
 
 function HatDecoration({ hat, color }: { hat: string; color: string }) {
-  // All coords relative to figure origin; head top is at y = -30 - 10 = -40
   switch (hat) {
     case "tophat":
       return (
         <>
-          {/* Brim */}
           <rect x={-8} y={-44} width={16} height={3} rx={1} fill={color} />
-          {/* Body */}
           <rect x={-5} y={-58} width={10} height={14} rx={1} fill={color} />
-          {/* Band */}
           <rect x={-5} y={-46} width={10} height={2.5} fill="#27272a" />
         </>
       );
     case "party":
       return (
         <>
-          {/* Cone */}
           <polygon points="0,-68 -8,-40 8,-40" fill="#ec4899" opacity={0.9} />
-          {/* Stripes */}
           <line x1={-4} y1={-54} x2={4} y2={-54} stroke="#fbbf24" strokeWidth={1.5} opacity={0.8} />
           <line x1={-6} y1={-47} x2={6} y2={-47} stroke="#60a5fa" strokeWidth={1.5} opacity={0.8} />
-          {/* Tip star */}
           <circle cx={0} cy={-68} r={2} fill="#fbbf24" />
-          {/* Dots */}
           <circle cx={-3} cy={-50} r={1.5} fill="#fbbf24" />
           <circle cx={3} cy={-57} r={1.5} fill="#60a5fa" />
           <circle cx={0} cy={-44} r={1.5} fill="#a855f7" />
@@ -177,42 +153,82 @@ function HatDecoration({ hat, color }: { hat: string; color: string }) {
     case "cowboy":
       return (
         <>
-          {/* Dome */}
           <ellipse cx={0} cy={-49} rx={7} ry={6} fill="#d97706" />
-          {/* Brim */}
           <ellipse cx={0} cy={-43} rx={12} ry={3} fill="#b45309" />
-          {/* Band */}
           <rect x={-7} y={-46} width={14} height={2} fill="#92400e" />
         </>
       );
     case "wizard":
       return (
         <>
-          {/* Cone */}
           <polygon points="0,-72 -7,-40 7,-40" fill="#7c3aed" />
-          {/* Stars */}
           <circle cx={-2} cy={-55} r={1.5} fill="#fbbf24" />
           <circle cx={3} cy={-63} r={1.2} fill="#fbbf24" />
           <circle cx={-4} cy={-46} r={1} fill="#a78bfa" />
-          {/* Brim */}
           <ellipse cx={0} cy={-40} rx={8} ry={2} fill="#6d28d9" />
-          {/* Tip sparkle */}
           <circle cx={0} cy={-72} r={1.5} fill="#fbbf24" />
         </>
       );
     case "crown":
       return (
         <>
-          <path
-            d="M -7,-40 L -7,-50 L -3.5,-45 L 0,-53 L 3.5,-45 L 7,-50 L 7,-40 Z"
-            fill="#fbbf24"
-            stroke="#d97706"
-            strokeWidth={1}
-          />
-          {/* Gems */}
+          <path d="M -7,-40 L -7,-50 L -3.5,-45 L 0,-53 L 3.5,-45 L 7,-50 L 7,-40 Z" fill="#fbbf24" stroke="#d97706" strokeWidth={1} />
           <circle cx={0} cy={-47} r={1.5} fill="#ef4444" />
           <circle cx={-4.5} cy={-43} r={1} fill="#60a5fa" />
           <circle cx={4.5} cy={-43} r={1} fill="#4ade80" />
+        </>
+      );
+    default:
+      return null;
+  }
+}
+
+function ShirtDecoration({ shirt }: { shirt: string }) {
+  // Torso area: x=-8 to x=8, y=-18 to y=8. Renders before body line so lines appear on top.
+  switch (shirt) {
+    case "sweater":
+      return (
+        <>
+          <rect x={-8} y={-18} width={16} height={26} rx={2} fill="#7c3aed" />
+          {/* V-neck */}
+          <path d="M -3,-18 L 0,-13 L 3,-18" stroke="#6d28d9" strokeWidth={1.5} fill="none" />
+          {/* Cable lines */}
+          <line x1={-3} y1={-14} x2={-3} y2={6} stroke="#6d28d9" strokeWidth={1} opacity={0.7} />
+          <line x1={3} y1={-14} x2={3} y2={6} stroke="#6d28d9" strokeWidth={1} opacity={0.7} />
+          {/* Rib bottom */}
+          <line x1={-8} y1={4} x2={8} y2={4} stroke="#6d28d9" strokeWidth={1} opacity={0.7} />
+          <line x1={-8} y1={7} x2={8} y2={7} stroke="#6d28d9" strokeWidth={1} opacity={0.7} />
+        </>
+      );
+    case "stripes":
+      return (
+        <>
+          <rect x={-8} y={-18} width={16} height={26} fill="#f8fafc" />
+          <rect x={-8} y={-18} width={16} height={5} fill="#ef4444" />
+          <rect x={-8} y={-8} width={16} height={5} fill="#ef4444" />
+          <rect x={-8} y={2} width={16} height={6} fill="#ef4444" />
+        </>
+      );
+    case "hoodie":
+      return (
+        <>
+          <rect x={-8} y={-18} width={16} height={26} rx={1} fill="#0d9488" />
+          {/* Hood fold */}
+          <path d="M -5,-18 Q 0,-13 5,-18" stroke="#0f766e" strokeWidth={2} fill="#0f766e" fillOpacity={0.4} />
+          {/* Kangaroo pocket */}
+          <rect x={-5} y={-3} width={10} height={7} rx={1} fill="#0f766e" />
+        </>
+      );
+    case "tuxedo":
+      return (
+        <>
+          <rect x={-8} y={-18} width={16} height={26} fill="#1e293b" />
+          {/* White lapels */}
+          <polygon points="0,-18 -7,-10 -7,-18" fill="#f8fafc" />
+          <polygon points="0,-18 7,-10 7,-18" fill="#f8fafc" />
+          {/* Bow tie */}
+          <polygon points="-3,-16 0,-14 -3,-12" fill="#ef4444" />
+          <polygon points="3,-16 0,-14 3,-12" fill="#ef4444" />
         </>
       );
     default:
@@ -232,7 +248,8 @@ function StickFigure({
   isWalkingToHatch,
   face = "neutral",
   hat = "none",
-  color = "#e2e8f0",
+  faceColor = "#f8fafc",
+  shirt = "none",
 }: {
   name: string;
   x: number;
@@ -245,9 +262,11 @@ function StickFigure({
   isWalkingToHatch: boolean;
   face?: string;
   hat?: string;
-  color?: string;
+  faceColor?: string;
+  shirt?: string;
 }) {
   const baseY = FLOOR_Y - 50;
+  const featureColor = getContrastColor(faceColor);
 
   if (isSeated || isEliminated) return null;
 
@@ -283,19 +302,21 @@ function StickFigure({
       }
     >
       {/* Hat */}
-      <HatDecoration hat={hat} color={color} />
-      {/* Head */}
-      <circle cx={0} cy={-30} r={10} stroke={color} strokeWidth={2} fill="none" />
-      {/* Face expression */}
-      <FaceExpression face={face} color={color} />
+      <HatDecoration hat={hat} color={faceColor} />
+      {/* Head — filled with chosen face color, outlined in black */}
+      <circle cx={0} cy={-30} r={10} stroke={BODY_COLOR} strokeWidth={2} fill={faceColor} />
+      {/* Face expression — features contrast against face fill */}
+      <FaceExpression face={face} featureColor={featureColor} />
+      {/* Shirt — drawn before body lines so lines appear on top */}
+      <ShirtDecoration shirt={shirt} />
       {/* Body */}
-      <line x1={0} y1={-20} x2={0} y2={10} stroke={color} strokeWidth={2} />
+      <line x1={0} y1={-20} x2={0} y2={10} stroke={BODY_COLOR} strokeWidth={2} />
       {/* Arms */}
-      <line x1={-15} y1={-5} x2={15} y2={-5} stroke={color} strokeWidth={2} />
+      <line x1={-15} y1={-5} x2={15} y2={-5} stroke={BODY_COLOR} strokeWidth={2} />
       {/* Left leg */}
-      <line x1={0} y1={10} x2={-12} y2={35} stroke={color} strokeWidth={2} />
+      <line x1={0} y1={10} x2={-12} y2={35} stroke={BODY_COLOR} strokeWidth={2} />
       {/* Right leg */}
-      <line x1={0} y1={10} x2={12} y2={35} stroke={color} strokeWidth={2} />
+      <line x1={0} y1={10} x2={12} y2={35} stroke={BODY_COLOR} strokeWidth={2} />
       {/* Name tag */}
       <text
         x={0}
@@ -336,7 +357,7 @@ export default function HatchAnimation({
         {/* Stage floor */}
         <rect x={0} y={FLOOR_Y} width={STAGE_W} height={4} fill="#3f3f46" />
 
-        {/* Hatch opening (hole in the floor) */}
+        {/* Hatch opening */}
         <rect x={HATCH_X} y={FLOOR_Y} width={HATCH_W} height={4} fill="#09090b" />
 
         {/* Figures */}
@@ -360,12 +381,13 @@ export default function HatchAnimation({
               isWalkingToHatch={isWinner && phase === "walking"}
               face={m.face}
               hat={m.hat}
-              color={m.color}
+              faceColor={m.color}
+              shirt={m.shirt}
             />
           );
         })}
 
-        {/* Hatch doors — pivot on top edge, swing open downward */}
+        {/* Hatch doors */}
         <motion.rect
           x={HATCH_X}
           y={FLOOR_Y - 2}
