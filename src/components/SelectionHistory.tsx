@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { parseUtc } from "@/lib/selection";
 
 interface HistoryRow {
   id: number;
@@ -42,7 +43,7 @@ export default function SelectionHistory() {
           <div className="flex items-center justify-between">
             <span className="font-semibold text-white">{row.manager_name ?? "(deleted)"}</span>
             <span className="text-xs text-zinc-500">
-              {new Date(row.selected_at).toLocaleString()}
+              {parseUtc(row.selected_at).toLocaleString()}
             </span>
           </div>
           {row.notes && (
