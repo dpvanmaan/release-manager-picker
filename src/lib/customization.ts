@@ -9,6 +9,7 @@ export const FACES = [
   { id: "beard",    label: "Beard",     emoji: "🧔" },
   { id: "lashes",   label: "Lashes",    emoji: "💁" },
   { id: "glam",     label: "Glam",      emoji: "💄" },
+  { id: "longhair", label: "Long Hair", emoji: "🧖" },
 ] as const;
 
 export const HATS = [

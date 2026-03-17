@@ -126,6 +126,16 @@ function MiniStickFigure({ face, hat, color }: { face: string; hat: string; colo
           <path d="M -4 -26.5 Q 0 -23 4 -26.5" stroke={color} strokeWidth={1.5} fill={color} fillOpacity={0.5} strokeLinecap="round" />
         </>
       )}
+      {face === "longhair" && (
+        <>
+          <path d="M -10,-30 Q -8,-43 0,-44 Q 8,-43 10,-30 Z" fill={color} />
+          <path d="M -9,-37 Q -13,-22 -12,-5 Q -12,8 -9,18" stroke={color} strokeWidth={3.5} fill="none" strokeLinecap="round" />
+          <path d="M 9,-37 Q 13,-22 12,-5 Q 12,8 9,18" stroke={color} strokeWidth={3.5} fill="none" strokeLinecap="round" />
+          <circle cx={-3.5} cy={-32} r={1.2} fill={color} />
+          <circle cx={3.5} cy={-32} r={1.2} fill={color} />
+          <path d="M -4 -27 Q 0 -23 4 -27" stroke={color} strokeWidth={1.5} fill="none" strokeLinecap="round" />
+        </>
+      )}
       {face === "shocked" && (
         <>
           <line x1={-5} y1={-35} x2={-2} y2={-32} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
