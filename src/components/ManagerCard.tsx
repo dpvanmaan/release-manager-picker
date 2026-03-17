@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { BODY_COLOR, getContrastColor } from "@/lib/customization";
+import { parseUtc } from "@/lib/selection";
 
 interface Manager {
   id: number;
@@ -22,8 +23,7 @@ interface Props {
 
 function daysSince(dateStr: string | null): number {
   if (!dateStr) return 999;
-  const normalized = dateStr.includes("T") ? dateStr : dateStr.replace(" ", "T") + "Z";
-  return (Date.now() - new Date(normalized).getTime()) / (1000 * 60 * 60 * 24);
+  return (Date.now() - parseUtc(dateStr).getTime()) / (1000 * 60 * 60 * 24);
 }
 
 function TinyFigure({
