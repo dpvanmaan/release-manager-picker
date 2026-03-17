@@ -75,6 +75,11 @@ export class SqliteAdapter implements DbAdapter {
     );
   }
 
+  async clearHistory(): Promise<void> {
+    const db = getDb();
+    db.prepare("DELETE FROM selection_history").run();
+  }
+
   async getHistory(page: number): Promise<HistoryResult> {
     const db = getDb();
     const limit = 20;

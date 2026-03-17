@@ -123,6 +123,11 @@ export class PostgresAdapter implements DbAdapter {
     `;
   }
 
+  async clearHistory(): Promise<void> {
+    await this.ensureSchema();
+    await sql()`DELETE FROM selection_history`;
+  }
+
   async getHistory(page: number): Promise<HistoryResult> {
     await this.ensureSchema();
     const limit = 20;

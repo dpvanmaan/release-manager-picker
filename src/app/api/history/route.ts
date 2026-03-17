@@ -9,3 +9,9 @@ export async function GET(request: Request) {
   const result = await adapter.getHistory(page);
   return NextResponse.json(result);
 }
+
+export async function DELETE() {
+  const adapter = getAdapter();
+  await adapter.clearHistory();
+  return NextResponse.json({ success: true });
+}
