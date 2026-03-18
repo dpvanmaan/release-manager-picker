@@ -327,17 +327,6 @@ function StickFigure({
       <line x1={0} y1={10} x2={12} y2={35} stroke={BODY_COLOR} strokeWidth={2} />
       {/* Shirt — drawn over body lines */}
       <ShirtDecoration shirt={shirt} />
-      {/* Name tag */}
-      <text
-        x={0}
-        y={50}
-        textAnchor="middle"
-        fontSize={10}
-        fill={isWinner ? "#fbbf24" : "#94a3b8"}
-        fontFamily="monospace"
-      >
-        {name.split(" ")[0]}
-      </text>
     </motion.g>
   );
 }
