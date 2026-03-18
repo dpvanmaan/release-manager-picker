@@ -1,13 +1,30 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Nav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { if (data?.email) setUserEmail(data.email); })
+      .catch(() => {});
+  }, []);
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/login");
+    router.refresh();
+  }
 
   const links = [
     { href: "/", label: "🎲 Picker" },
     { href: "/managers", label: "👥 Team" },
+    { href: "/users", label: "🔑 Users" },
   ];
 
   return (
@@ -16,7 +33,7 @@ export default function Nav() {
         <span className="font-bangers text-2xl tracking-wide text-red-500">
           RELEASE ROULETTE
         </span>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
           {links.map(({ href, label }) => (
             <Link
               key={href}
@@ -28,6 +45,15 @@ export default function Nav() {
               {label}
             </Link>
           ))}
+          {userEmail && (
+            <span className="text-xs text-zinc-500">{userEmail}</span>
+          )}
+          <button
+            onClick={handleLogout}
+            className="text-sm font-medium text-zinc-400 transition-colors hover:text-white"
+          >
+            Sign out
+          </button>
         </div>
       </div>
     </nav>

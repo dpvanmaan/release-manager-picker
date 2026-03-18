@@ -1,5 +1,6 @@
+import bcrypt from "bcryptjs";
 import postgres from "postgres";
-import type { DbAdapter, ManagerWithStats, ManagerForSelection, HistoryResult } from "./adapter";
+import type { DbAdapter, DbUser, ManagerWithStats, ManagerForSelection, HistoryResult } from "./adapter";
 import type { Manager, SelectionHistoryRow } from "@/lib/types";
 
 function getSql() {
@@ -48,6 +49,23 @@ export class PostgresAdapter implements DbAdapter {
       CREATE INDEX IF NOT EXISTS idx_history_manager_selected
         ON selection_history(manager_id, selected_at DESC)
     `;
+    await db`
+      CREATE TABLE IF NOT EXISTS users (
+        id            SERIAL PRIMARY KEY,
+        email         TEXT   NOT NULL UNIQUE,
+        password_hash TEXT   NOT NULL,
+        created_at    TEXT   NOT NULL DEFAULT (NOW()::text)
+      )
+    `;
+    const seedEmail = process.env.SEED_USER_EMAIL;
+    const seedPassword = process.env.SEED_USER_PASSWORD;
+    if (seedEmail && seedPassword) {
+      const existing = await db`SELECT id FROM users LIMIT 1`;
+      if (existing.length === 0) {
+        const hash = await bcrypt.hash(seedPassword, 12);
+        await db`INSERT INTO users (email, password_hash) VALUES (${seedEmail.toLowerCase().trim()}, ${hash})`;
+      }
+    }
     this.initialized = true;
   }
 
@@ -131,6 +149,27 @@ export class PostgresAdapter implements DbAdapter {
   async deleteHistoryEntry(id: number): Promise<void> {
     await this.ensureSchema();
     await sql()`DELETE FROM selection_history WHERE id = ${id}`;
+  }
+
+  async getUserByEmail(email: string): Promise<DbUser | null> {
+    await this.ensureSchema();
+    const rows = await sql()<DbUser[]>`SELECT * FROM users WHERE email = ${email}`;
+    return rows[0] ?? null;
+  }
+
+  async createUser(email: string, passwordHash: string): Promise<DbUser> {
+    await this.ensureSchema();
+    const rows = await sql()<DbUser[]>`
+      INSERT INTO users (email, password_hash) VALUES (${email}, ${passwordHash}) RETURNING *
+    `;
+    return rows[0];
+  }
+
+  async listUsers(): Promise<{ id: number; email: string; created_at: string }[]> {
+    await this.ensureSchema();
+    return sql()<{ id: number; email: string; created_at: string }[]>`
+      SELECT id, email, created_at FROM users ORDER BY created_at ASC
+    `;
   }
 
   async getHistory(page: number): Promise<HistoryResult> {

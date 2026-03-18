@@ -35,6 +35,13 @@ function getDb(): Database.Database {
 
     CREATE INDEX IF NOT EXISTS idx_history_manager_selected
       ON selection_history(manager_id, selected_at DESC);
+
+    CREATE TABLE IF NOT EXISTS users (
+      id            INTEGER PRIMARY KEY AUTOINCREMENT,
+      email         TEXT    NOT NULL UNIQUE,
+      password_hash TEXT    NOT NULL,
+      created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 
   // Idempotent migrations for customization columns

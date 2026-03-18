@@ -1,8 +1,25 @@
+import bcrypt from "bcryptjs";
 import getDb from "./database";
-import type { DbAdapter, ManagerWithStats, ManagerForSelection, HistoryResult } from "./adapter";
+import type { DbAdapter, DbUser, ManagerWithStats, ManagerForSelection, HistoryResult } from "./adapter";
 import type { Manager } from "@/lib/types";
 
 export class SqliteAdapter implements DbAdapter {
+  private usersInitialized = false;
+
+  private async ensureUsers(): Promise<void> {
+    if (this.usersInitialized) return;
+    const db = getDb();
+    const seedEmail = process.env.SEED_USER_EMAIL;
+    const seedPassword = process.env.SEED_USER_PASSWORD;
+    if (seedEmail && seedPassword) {
+      const existing = db.prepare("SELECT id FROM users LIMIT 1").get();
+      if (!existing) {
+        const hash = await bcrypt.hash(seedPassword, 12);
+        db.prepare("INSERT INTO users (email, password_hash) VALUES (?, ?)").run(seedEmail.toLowerCase().trim(), hash);
+      }
+    }
+    this.usersInitialized = true;
+  }
   async getManagers(): Promise<ManagerWithStats[]> {
     const db = getDb();
     return db
@@ -83,6 +100,25 @@ export class SqliteAdapter implements DbAdapter {
   async deleteHistoryEntry(id: number): Promise<void> {
     const db = getDb();
     db.prepare("DELETE FROM selection_history WHERE id = ?").run(id);
+  }
+
+  async getUserByEmail(email: string): Promise<DbUser | null> {
+    await this.ensureUsers();
+    const db = getDb();
+    return (db.prepare("SELECT * FROM users WHERE email = ?").get(email) as DbUser) ?? null;
+  }
+
+  async createUser(email: string, passwordHash: string): Promise<DbUser> {
+    await this.ensureUsers();
+    const db = getDb();
+    const result = db.prepare("INSERT INTO users (email, password_hash) VALUES (?, ?)").run(email, passwordHash);
+    return db.prepare("SELECT * FROM users WHERE id = ?").get(result.lastInsertRowid) as DbUser;
+  }
+
+  async listUsers(): Promise<{ id: number; email: string; created_at: string }[]> {
+    await this.ensureUsers();
+    const db = getDb();
+    return db.prepare("SELECT id, email, created_at FROM users ORDER BY created_at ASC").all() as { id: number; email: string; created_at: string }[];
   }
 
   async getHistory(page: number): Promise<HistoryResult> {
