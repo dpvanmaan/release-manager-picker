@@ -26,4 +26,5 @@ export interface DbAdapter {
   recordSelection(managerId: number, notes: string): Promise<void>;
   getHistory(page: number): Promise<HistoryResult>;
   clearHistory(): Promise<void>;
+  deleteHistoryEntry(id: number): Promise<void>;
 }

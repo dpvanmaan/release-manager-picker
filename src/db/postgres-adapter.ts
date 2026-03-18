@@ -128,6 +128,11 @@ export class PostgresAdapter implements DbAdapter {
     await sql()`DELETE FROM selection_history`;
   }
 
+  async deleteHistoryEntry(id: number): Promise<void> {
+    await this.ensureSchema();
+    await sql()`DELETE FROM selection_history WHERE id = ${id}`;
+  }
+
   async getHistory(page: number): Promise<HistoryResult> {
     await this.ensureSchema();
     const limit = 20;
