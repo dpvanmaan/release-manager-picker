@@ -435,9 +435,6 @@ export default function HatchAnimation({
                 <line x1={0} y1={10} x2={12} y2={35} stroke={BODY_COLOR} strokeWidth={2} />
                 <ShirtDecoration shirt={winner.shirt ?? "none"} />
               </svg>
-              <div className="font-bangers text-xl tracking-wide text-yellow-400">
-                {winner.name}
-              </div>
               {funnyMessage && (
                 <FunnyMessage
                   key={winner.id + funnyMessage}
