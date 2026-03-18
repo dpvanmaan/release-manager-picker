@@ -2,6 +2,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import type { AnimationPhase } from "@/lib/types";
 import { BODY_COLOR, getContrastColor } from "@/lib/customization";
+import FunnyMessage from "@/components/FunnyMessage";
 
 interface Manager {
   id: number;
@@ -17,6 +18,7 @@ interface Props {
   managers: Manager[];
   winner: Manager | null;
   eliminatedIds: number[];
+  funnyMessage?: string;
 }
 
 const STAGE_W = 560;
@@ -345,6 +347,7 @@ export default function HatchAnimation({
   managers,
   winner,
   eliminatedIds,
+  funnyMessage,
 }: Props) {
   const count = managers.length;
   const totalWidth = Math.max(count * FIGURE_SPACING, STAGE_W);
@@ -423,7 +426,7 @@ export default function HatchAnimation({
       </svg>
 
       {/* Below-stage: fate area */}
-      <div className="flex min-h-[80px] items-center justify-center bg-zinc-950/60 py-2">
+      <div className="flex flex-col items-center justify-center bg-zinc-950/60 py-4">
         <AnimatePresence>
           {(phase === "seated" || phase === "celebrating") && winner && (
             <motion.div
@@ -431,7 +434,7 @@ export default function HatchAnimation({
               initial={{ opacity: 0, scale: 0.5, y: -30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="flex flex-col items-center gap-1"
+              className="flex w-full flex-col items-center gap-1 px-6"
             >
               <svg viewBox="-20 -80 40 100" width={60} height={90} aria-hidden>
                 <HatDecoration hat={winner.hat ?? "none"} color={winner.color ?? "#f8fafc"} />
@@ -446,6 +449,13 @@ export default function HatchAnimation({
               <div className="font-bangers text-xl tracking-wide text-yellow-400">
                 {winner.name}
               </div>
+              {funnyMessage && (
+                <FunnyMessage
+                  key={winner.id + funnyMessage}
+                  message={funnyMessage}
+                  winnerName={winner.name}
+                />
+              )}
             </motion.div>
           )}
           {phase === "idle" && (

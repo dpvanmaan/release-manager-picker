@@ -1,10 +1,9 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import type { AnimationPhase } from "@/lib/types";
 import BigRedButton from "@/components/BigRedButton";
 import HatchAnimation from "@/components/HatchAnimation";
-import FunnyMessage from "@/components/FunnyMessage";
 import ConfettiBlast from "@/components/ConfettiBlast";
 import SelectionHistory from "@/components/SelectionHistory";
 
@@ -223,6 +222,7 @@ export default function HomePage() {
             managers={eligibleManagers}
             winner={winner}
             eliminatedIds={eliminatedIds}
+            funnyMessage={funnyMessage}
           />
 
           <div className="flex flex-col items-center gap-2">
@@ -236,16 +236,6 @@ export default function HomePage() {
           </div>
         </>
       )}
-
-      <AnimatePresence>
-        {(phase === "celebrating" || phase === "seated") && winner && (
-          <FunnyMessage
-            key={winner.id + funnyMessage}
-            message={funnyMessage}
-            winnerName={winner.name}
-          />
-        )}
-      </AnimatePresence>
 
       {phase === "celebrating" && <ConfettiBlast key={historyKey} />}
 
