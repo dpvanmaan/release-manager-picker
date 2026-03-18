@@ -80,6 +80,11 @@ export class SqliteAdapter implements DbAdapter {
     db.prepare("DELETE FROM selection_history").run();
   }
 
+  async deleteHistoryEntry(id: number): Promise<void> {
+    const db = getDb();
+    db.prepare("DELETE FROM selection_history WHERE id = ?").run(id);
+  }
+
   async getHistory(page: number): Promise<HistoryResult> {
     const db = getDb();
     const limit = 20;

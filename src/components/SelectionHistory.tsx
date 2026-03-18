@@ -16,6 +16,8 @@ export default function SelectionHistory() {
   const [loading, setLoading] = useState(true);
   const [confirming, setConfirming] = useState(false);
   const [clearing, setClearing] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetch("/api/history")
@@ -32,6 +34,15 @@ export default function SelectionHistory() {
     setRows([]);
     setClearing(false);
     setConfirming(false);
+  }
+
+  async function handleDeleteOne() {
+    if (deletingId === null) return;
+    setDeleting(true);
+    await fetch(`/api/history?id=${deletingId}`, { method: "DELETE" });
+    setRows((prev) => prev.filter((r) => r.id !== deletingId));
+    setDeleting(false);
+    setDeletingId(null);
   }
 
   if (loading)
@@ -63,9 +74,18 @@ export default function SelectionHistory() {
           >
             <div className="flex items-center justify-between">
               <span className="font-semibold text-white">{row.manager_name ?? "(deleted)"}</span>
-              <span className="text-xs text-zinc-500">
-                {parseUtc(row.selected_at).toLocaleString()}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-zinc-500">
+                  {parseUtc(row.selected_at).toLocaleString()}
+                </span>
+                <button
+                  onClick={() => setDeletingId(row.id)}
+                  title="Remove this pick"
+                  className="rounded px-1 text-zinc-600 transition-colors hover:text-red-400"
+                >
+                  ×
+                </button>
+              </div>
             </div>
             {row.notes && (
               <p className="mt-1 text-xs text-zinc-400 italic">{row.notes}</p>
@@ -109,6 +129,48 @@ export default function SelectionHistory() {
                   className="flex-1 rounded-lg bg-red-700 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-600 disabled:opacity-50"
                 >
                   {clearing ? "Clearing…" : "Clear All"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {deletingId !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            onClick={() => setDeletingId(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 8 }}
+              transition={{ type: "spring", duration: 0.3 }}
+              className="mx-4 w-full max-w-sm rounded-xl border border-zinc-700 bg-zinc-900 p-6 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="mb-2 text-lg font-semibold text-white">Remove this pick?</h3>
+              <p className="mb-6 text-sm text-zinc-400">
+                This will permanently delete this pick record. This cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeletingId(null)}
+                  disabled={deleting}
+                  className="flex-1 rounded-lg border border-zinc-700 bg-zinc-800 py-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-700 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteOne}
+                  disabled={deleting}
+                  className="flex-1 rounded-lg bg-red-700 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-600 disabled:opacity-50"
+                >
+                  {deleting ? "Removing…" : "Remove"}
                 </button>
               </div>
             </motion.div>

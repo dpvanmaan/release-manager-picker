@@ -10,8 +10,14 @@ export async function GET(request: Request) {
   return NextResponse.json(result);
 }
 
-export async function DELETE() {
+export async function DELETE(request: Request) {
   const adapter = getAdapter();
-  await adapter.clearHistory();
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+  if (id) {
+    await adapter.deleteHistoryEntry(Number(id));
+  } else {
+    await adapter.clearHistory();
+  }
   return NextResponse.json({ success: true });
 }
